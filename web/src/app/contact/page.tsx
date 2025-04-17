@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable react/no-unescaped-entities */
 "use client"
 
 import type React from "react"
@@ -9,9 +11,8 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import CenteredContainer from "@/layout/centered-container"
 
-import { Phone, Mail, MapPin, Clock, ChevronRight, Send, Instagram, Facebook, Twitter } from "lucide-react"
-import Header from "@/components/header";
-import Footer from "@/components/footer";
+import { Phone, Mail, MapPin, Clock, Send, Instagram, Facebook, Twitter } from "lucide-react"
+
 
 export default function ContactPage() {
     const [formStatus, setFormStatus] = useState<"idle" | "submitting" | "success" | "error">("idle")

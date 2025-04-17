@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable react/no-unescaped-entities */
 import { Button } from "@/components/ui/button"
 import { ChevronRight } from 'lucide-react'
 

@@ -1,4 +1,4 @@
-import CenteredContainer from "@/components/layout/centered-container"
+import CenteredContainer from "@/layout/centered-container"
 
 export default function HeroSection() {
     return (

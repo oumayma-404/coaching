@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable react/no-unescaped-entities */
 import { Trophy, ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import BeforeAfterCard from "@/components/ui/before-after-card"

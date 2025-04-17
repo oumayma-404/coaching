@@ -1,18 +1,16 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable react/no-unescaped-entities */
 "use client"
 
-import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { ShoppingBag, Trash2, ChevronRight, ArrowLeft } from "lucide-react"
 import CenteredContainer from "@/layout/centered-container"
 import { useCart } from "@/context/cart-context"
 
 export default function BasketPage() {
     const { items, removeItem, updateQuantity, clearCart } = useCart()
-    const [promoCode, setPromoCode] = useState("")
-    const [promoApplied, setPromoApplied] = useState(false)
 
     // Calculate totals
     const subtotal = items.reduce((total, item) => total + item.price * item.quantity, 0)

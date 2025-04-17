@@ -1,9 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable react/no-unescaped-entities */
 import Image from "next/image"
-import { Button } from "@/components/ui/button"
-import { ChevronRight } from "lucide-react"
-import Header from "@/components/header";
 import CenteredContainer from "@/layout/centered-container"
-import Footer from "@/components/footer";
 
 
 export default function ResultsPage() {

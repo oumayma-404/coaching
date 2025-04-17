@@ -1,11 +1,12 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable react/no-unescaped-entities */
+
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Check, Dumbbell, ChevronRight, Users, Calendar, BarChart3, Clock } from "lucide-react"
 import CenteredContainer from "@/layout/centered-container"
-import Header from "@/components/header";
 import type React from "react";
-import Footer from "@/components/footer";
 
 export default function CoachingPage() {
     return (

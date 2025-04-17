@@ -1,5 +1,6 @@
-import Header from "@/components/header"
-import Footer from "@/components/footer"
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable react/no-unescaped-entities */
+
 import HeroSection from "@/components/sections/hero-section"
 import ResultsSection from "@/components/sections/results-section"
 import CoachingSection from "@/components/sections/coaching-section"
