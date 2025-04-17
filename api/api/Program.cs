@@ -12,8 +12,16 @@ using Microsoft.Extensions.Hosting;
 var builder = WebApplication.CreateBuilder(args);
 
 
+var dbHost = Environment.GetEnvironmentVariable("DB_HOST");
+var dbPort = Environment.GetEnvironmentVariable("DB_PORT");
+var dbUsername = Environment.GetEnvironmentVariable("DB_USERNAME");
+var dbPassword = Environment.GetEnvironmentVariable("DB_PASSWORD");
+var dbName = Environment.GetEnvironmentVariable("DB_DATABASE");
+
+var connectionString = $"Host={dbHost};Port={dbPort};Username={dbUsername};Password={dbPassword};Database={dbName}";
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("PostgreSQLConnection")));
+    options.UseNpgsql(connectionString));
 
 // Register services (same as before)
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
