@@ -9,7 +9,6 @@ import CtaSection from "@/components/sections/cta-section"
 export default function Home() {
     return (
         <div className="flex min-h-screen flex-col">
-            <Header />
             <main className="flex-1">
                 <HeroSection />
                 <ResultsSection />
@@ -17,7 +16,6 @@ export default function Home() {
                 <ShopSection />
                 <CtaSection />
             </main>
-            <Footer />
         </div>
     )
 }

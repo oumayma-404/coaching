@@ -76,6 +76,71 @@
   --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
   --sidebar-border: oklch(0.929 0.013 255.508);
   --sidebar-ring: oklch(0.704 0.04 256.788);
+  --accent-red: #FF0000		;       /* Sophisticated red */
+  --accent-yellow: #ffd466;    /* Muted golden yellow */
+  --accent-red-light: #f4d5d8; /* Very light red for subtle backgrounds */
+  --accent-yellow-light: #fff9e6; /* Very light yellow */
+  --accent-yellow-dark: #f3bf3a;
+}
+
+/* ===== Button Styles ===== */
+.btn {
+  /* ... your existing btn styles ... */
+  transition: all 0.3s ease;
+}
+
+.btn-primary {
+  background-color: var(--accent-red);
+  border-color: var(--accent-red);
+}
+
+.btn-primary:hover {
+  background-color: transparent;
+  color: var(--accent-red);
+}
+
+.accent-text {
+  color: var(--accent-red);
+  font-style: italic;
+}
+
+.btn-secondary {
+  background-color: var(--accent-yellow);
+  border-color: var(--accent-yellow);
+  color: #333; /* Dark text for better contrast on yellow */
+}
+
+.btn-secondary:hover {
+  background-color: var(--accent-yellow-dark);
+}
+
+/* ===== Text Accents ===== */
+.text-accent-red {
+  color: var(--accent-red);
+}
+
+.text-accent-yellow {
+  color: var(--accent-yellow);
+}
+
+/* ===== Subtle Backgrounds ===== */
+.bg-accent-red-light {
+  background-color: var(--accent-red-light);
+}
+
+.bg-accent-yellow-light {
+  background-color: var(--accent-yellow-light);
+}
+
+/* ===== Border Accents ===== */
+.border-accent-red {
+  border-left: 3px solid var(--accent-red);
+  padding-left: 1rem;
+}
+
+.border-accent-yellow {
+  border-bottom: 2px solid var(--accent-yellow);
+  padding-bottom: 0.5rem;
 }
 
 .dark {

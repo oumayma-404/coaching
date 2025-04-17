@@ -1,37 +1,63 @@
+"use client"
+
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { ShoppingBag } from "lucide-react"
+import { useCart } from "@/context/cart-context"
+import { useToast } from "@/components/ui/use-toast"
 
 interface ProductCardProps {
+    id: string
     name: string
     price: number
     image: string
     category: string
 }
 
-export default function ProductCard({ name, price, image, category }: ProductCardProps) {
+export default function ProductCard({ id, name, price, image, category }: ProductCardProps) {
+    const { addItem } = useCart()
+    const { toast } = useToast()
+
+    const handleAddToCart = () => {
+        addItem({
+            id,
+            name,
+            price,
+            image,
+            category,
+        })
+
+        toast({
+            title: "Added to cart",
+            description: `${name} has been added to your cart.`,
+            duration: 3000,
+        })
+    }
+
     return (
-        <Card className="overflow-hidden">
-            <div className="aspect-square relative">
+        <div className="group overflow-hidden rounded-lg border bg-white shadow-sm transition-all hover:shadow-md">
+            <div className="relative aspect-square overflow-hidden">
                 <Image
                     src={image || "/placeholder.svg"}
                     alt={name}
-                    fill
-                    className="object-cover transition-transform hover:scale-105"
+                    width={300}
+                    height={300}
+                    className="h-full w-full object-cover transition-transform group-hover:scale-105"
                 />
-                <div className="absolute top-2 right-2 rounded-full bg-black/70 px-2 py-1 text-xs text-white">{category}</div>
             </div>
-            <CardContent className="p-4">
-                <h3 className="font-semibold">{name}</h3>
-                <div className="flex items-center justify-between mt-2">
-                    <p className="font-bold">${price.toFixed(2)}</p>
-                    <Button size="sm" variant="outline">
-                        <ShoppingBag className="h-4 w-4 mr-2" />
+            <div className="p-4">
+                <div className="text-sm text-gray-500">{category}</div>
+                <h3 className="font-medium">{name}</h3>
+                <div className="mt-1 flex items-center justify-between">
+                    <span className="font-bold">${price.toFixed(2)}</span>
+                    <Button
+                        size="sm"
+                        className="bg-gradient-to-r from-red-600 to-orange-500 hover:from-red-700 hover:to-orange-600"
+                        onClick={handleAddToCart}
+                    >
                         Add to Cart
                     </Button>
                 </div>
-            </CardContent>
-        </Card>
+            </div>
+        </div>
     )
 }
