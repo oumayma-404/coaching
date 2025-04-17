@@ -10,9 +10,27 @@ import { ShoppingBag, Search, Filter, ChevronRight, ChevronDown, Star } from "lu
 import CenteredContainer from "@/layout/centered-container"
 import { useCart } from "@/context/cart-context"
 import { useToast } from "@/components/ui/use-toast"
+// Product type definition
+type Product = {
+    id: string;
+    name: string;
+    price: number;
+    image: string;
+    category: string;
+    rating: number;
+    reviews: number;
+    bestseller: boolean;
+};
 
-// Product data that could be fetched from an API
-const products = {
+// Type for products grouped by category
+type ProductsByCategory = {
+    supplements: Product[];
+    equipment: Product[];
+    apparel: Product[];
+};
+
+// Product data
+const products: ProductsByCategory = {
     supplements: [
         {
             id: "s1",
@@ -202,19 +220,19 @@ const products = {
 }
 
 // Combine all products for the "all" tab
-const allProducts = [...products.supplements, ...products.equipment, ...products.apparel]
+const allProducts: Product[] = [...products.supplements, ...products.equipment, ...products.apparel]
 
 export default function ShopPage() {
-    const [activeCategory, setActiveCategory] = useState("all")
-    const [searchQuery, setSearchQuery] = useState("")
-    const [sortBy, setSortBy] = useState("featured")
-    const [showFilters, setShowFilters] = useState(false)
-    const [priceRange, setPriceRange] = useState({ min: 0, max: 200 })
+    const [activeCategory, setActiveCategory] = useState<string>("all")
+    const [searchQuery, setSearchQuery] = useState<string>("")
+    const [sortBy, setSortBy] = useState<string>("featured")
+    const [showFilters, setShowFilters] = useState<boolean>(false)
+    const [priceRange, setPriceRange] = useState<{ min: number; max: number }>({ min: 0, max: 200 })
     const { addItem } = useCart()
     const { toast } = useToast()
 
     // Filter products based on search query and price range
-    const filterProducts = (productList) => {
+    const filterProducts = (productList: Product[]): Product[] => {
         return productList.filter(
             (product) =>
                 product.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
@@ -224,7 +242,7 @@ export default function ShopPage() {
     }
 
     // Sort products based on selected option
-    const sortProducts = (productList) => {
+    const sortProducts = (productList: Product[]): Product[] => {
         switch (sortBy) {
             case "price-low":
                 return [...productList].sort((a, b) => a.price - b.price)
@@ -239,20 +257,20 @@ export default function ShopPage() {
     }
 
     // Get the current products based on active category, search, and filters
-    const getCurrentProducts = () => {
-        let currentProducts = []
+    const getCurrentProducts = (): Product[] => {
+        let currentProducts: Product[] = []
 
         if (activeCategory === "all") {
             currentProducts = allProducts
         } else {
-            currentProducts = products[activeCategory]
+            currentProducts = products[activeCategory as keyof ProductsByCategory]
         }
 
         return sortProducts(filterProducts(currentProducts))
     }
 
     // Handle adding item to cart
-    const handleAddToCart = (product) => {
+    const handleAddToCart = (product: Product) => {
         addItem({
             id: product.id,
             name: product.name,
@@ -267,6 +285,7 @@ export default function ShopPage() {
             duration: 3000,
         })
     }
+
 
     return (
         <div className="min-h-screen bg-white">
