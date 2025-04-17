@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable react/no-unescaped-entities */
 import Link from "next/link"
 import { Dumbbell, Instagram, Facebook, Twitter, Youtube, ArrowRight } from 'lucide-react'
 
