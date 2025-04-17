@@ -120,18 +120,18 @@ export default function ShopSection() {
     }
 
     return (
-        <section id="shop" className="w-full py-12 md:py-24 lg:py-32 bg-gray-50">
+        <section id="shop" className="w-full py-12 md:py-24 lg:py-32 bg-white">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div className="flex flex-col items-center justify-center space-y-4 text-center">
                     <div className="space-y-2">
-                        <div className="inline-flex items-center rounded-full bg-orange-100 px-2.5 py-0.5 text-sm font-semibold text-orange-800">
+                        <div className="inline-flex items-center rounded-full border border-[#003942]/20 bg-[#003942]/10 px-2.5 py-0.5 text-sm font-semibold text-[#003942]">
                             <ShoppingBag className="mr-1 h-4 w-4" />
                             Shop
                         </div>
-                        <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
-                            Training <span className="text-red-600">Essentials</span>
+                        <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl text-[#003942]">
+                            Training <span className="text-[#003942]">Essentials</span>
                         </h2>
-                        <p className="max-w-[900px] text-gray-600 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+                        <p className="max-w-[900px] text-[#003942]/70 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
                             Quality products hand-picked by our coaches to help you reach your fitness goals faster.
                         </p>
                     </div>
@@ -141,14 +141,18 @@ export default function ShopSection() {
                         <TabsList className="bg-white border">
                             <TabsTrigger
                                 value="all"
-                                className={activeTab === "all" ? "data-[state=active]:bg-red-50 data-[state=active]:text-red-600" : ""}
+                                className={
+                                    activeTab === "all" ? "data-[state=active]:bg-[#003942]/10 data-[state=active]:text-[#003942]" : ""
+                                }
                             >
                                 All Products
                             </TabsTrigger>
                             <TabsTrigger
                                 value="supplements"
                                 className={
-                                    activeTab === "supplements" ? "data-[state=active]:bg-red-50 data-[state=active]:text-red-600" : ""
+                                    activeTab === "supplements"
+                                        ? "data-[state=active]:bg-[#003942]/10 data-[state=active]:text-[#003942]"
+                                        : ""
                                 }
                             >
                                 Supplements
@@ -156,7 +160,9 @@ export default function ShopSection() {
                             <TabsTrigger
                                 value="equipment"
                                 className={
-                                    activeTab === "equipment" ? "data-[state=active]:bg-red-50 data-[state=active]:text-red-600" : ""
+                                    activeTab === "equipment"
+                                        ? "data-[state=active]:bg-[#003942]/10 data-[state=active]:text-[#003942]"
+                                        : ""
                                 }
                             >
                                 Equipment
@@ -164,7 +170,9 @@ export default function ShopSection() {
                             <TabsTrigger
                                 value="apparel"
                                 className={
-                                    activeTab === "apparel" ? "data-[state=active]:bg-red-50 data-[state=active]:text-red-600" : ""
+                                    activeTab === "apparel"
+                                        ? "data-[state=active]:bg-[#003942]/10 data-[state=active]:text-[#003942]"
+                                        : ""
                                 }
                             >
                                 Apparel
@@ -230,7 +238,7 @@ export default function ShopSection() {
                 </Tabs>
                 <div className="mt-12 flex justify-center">
                     <Link href="/shop">
-                        <Button variant="outline" size="lg" className="border-red-600 text-red-600 hover:bg-red-50 group">
+                        <Button variant="outline" size="lg" className="border-[#003942] text-[#003942] hover:bg-[#003942]/10 group">
                             View All Products
                             <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                         </Button>

@@ -17,25 +17,25 @@ export default function Header() {
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex h-16 items-center justify-between">
                 <div className="flex items-center gap-2 font-bold text-xl">
                     <Link href="/" className="flex items-center gap-2">
-                        <Dumbbell className="h-6 w-6 text-red-600" />
-                        <span>FitCoach</span>
+                        <Dumbbell className="h-6 w-6 text-[#003942]" />
+                        <span className="text-[#003942]">FitCoach</span>
                     </Link>
                 </div>
 
                 <nav className="hidden md:flex gap-6">
-                    <Link href="/" className="text-sm font-medium transition-colors hover:text-red-600">
+                    <Link href="/" className="text-sm font-medium transition-colors hover:text-[#003942]">
                         Home
                     </Link>
-                    <Link href="/results" className="text-sm font-medium transition-colors hover:text-red-600">
+                    <Link href="/results" className="text-sm font-medium transition-colors hover:text-[#003942]">
                         Results
                     </Link>
-                    <Link href="/coaching" className="text-sm font-medium transition-colors hover:text-red-600">
+                    <Link href="/coaching" className="text-sm font-medium transition-colors hover:text-[#003942]">
                         Coaching
                     </Link>
-                    <Link href="/shop" className="text-sm font-medium transition-colors hover:text-red-600">
+                    <Link href="/shop" className="text-sm font-medium transition-colors hover:text-[#003942]">
                         Shop
                     </Link>
-                    <Link href="/contact" className="text-sm font-medium transition-colors hover:text-red-600">
+                    <Link href="/contact" className="text-sm font-medium transition-colors hover:text-[#003942]">
                         Contact
                     </Link>
                 </nav>
@@ -43,9 +43,9 @@ export default function Header() {
                 <div className="flex items-center gap-4">
                     <Link href="/basket" className="relative">
                         <Button variant="ghost" size="icon" className="relative">
-                            <ShoppingBag className="h-5 w-5" />
+                            <ShoppingBag className="h-5 w-5 text-[#003942]" />
                             {itemCount > 0 && (
-                                <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-600 text-xs text-white">
+                                <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-[#003942] text-xs text-white">
                   {itemCount}
                 </span>
                             )}
@@ -54,13 +54,11 @@ export default function Header() {
                     </Link>
 
                     <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-                        <Menu className="h-6 w-6" />
+                        <Menu className="h-6 w-6 text-[#003942]" />
                         <span className="sr-only">Toggle menu</span>
                     </Button>
 
-                    <Button className="hidden md:inline-flex bg-gradient-to-r from-red-600 to-orange-500 hover:from-red-700 hover:to-orange-600">
-                        Get Started
-                    </Button>
+                    <Button className="hidden md:inline-flex bg-[#003942] text-[#f4efe8] hover:bg-[#004e5a]">Get Started</Button>
                 </div>
             </div>
 
@@ -70,42 +68,40 @@ export default function Header() {
                     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4 flex flex-col space-y-4">
                         <Link
                             href="/"
-                            className="text-sm font-medium py-2 transition-colors hover:text-red-600"
+                            className="text-sm font-medium py-2 transition-colors hover:text-[#003942]"
                             onClick={() => setMobileMenuOpen(false)}
                         >
                             Home
                         </Link>
                         <Link
                             href="/results"
-                            className="text-sm font-medium py-2 transition-colors hover:text-red-600"
+                            className="text-sm font-medium py-2 transition-colors hover:text-[#003942]"
                             onClick={() => setMobileMenuOpen(false)}
                         >
                             Results
                         </Link>
                         <Link
                             href="/coaching"
-                            className="text-sm font-medium py-2 transition-colors hover:text-red-600"
+                            className="text-sm font-medium py-2 transition-colors hover:text-[#003942]"
                             onClick={() => setMobileMenuOpen(false)}
                         >
                             Coaching
                         </Link>
                         <Link
                             href="/shop"
-                            className="text-sm font-medium py-2 transition-colors hover:text-red-600"
+                            className="text-sm font-medium py-2 transition-colors hover:text-[#003942]"
                             onClick={() => setMobileMenuOpen(false)}
                         >
                             Shop
                         </Link>
                         <Link
                             href="/contact"
-                            className="text-sm font-medium py-2 transition-colors hover:text-red-600"
+                            className="text-sm font-medium py-2 transition-colors hover:text-[#003942]"
                             onClick={() => setMobileMenuOpen(false)}
                         >
                             Contact
                         </Link>
-                        <Button className="w-full bg-gradient-to-r from-red-600 to-orange-500 hover:from-red-700 hover:to-orange-600">
-                            Get Started
-                        </Button>
+                        <Button className="w-full bg-[#003942] text-[#f4efe8] hover:bg-[#004e5a]">Get Started</Button>
                     </div>
                 </div>
             )}

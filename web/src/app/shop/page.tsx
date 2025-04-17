@@ -11,27 +11,8 @@ import CenteredContainer from "@/layout/centered-container"
 import { useCart } from "@/context/cart-context"
 import { useToast } from "@/components/ui/use-toast"
 
-// Product type definition
-type Product = {
-    id: string;
-    name: string;
-    price: number;
-    image: string;
-    category: string;
-    rating: number;
-    reviews: number;
-    bestseller: boolean;
-};
-
-// Type for products grouped by category
-type ProductsByCategory = {
-    supplements: Product[];
-    equipment: Product[];
-    apparel: Product[];
-};
-
-// Product data
-const products: ProductsByCategory = {
+// Product data that could be fetched from an API
+const products = {
     supplements: [
         {
             id: "s1",
@@ -221,19 +202,19 @@ const products: ProductsByCategory = {
 }
 
 // Combine all products for the "all" tab
-const allProducts: Product[] = [...products.supplements, ...products.equipment, ...products.apparel]
+const allProducts = [...products.supplements, ...products.equipment, ...products.apparel]
 
 export default function ShopPage() {
-    const [activeCategory, setActiveCategory] = useState<string>("all")
-    const [searchQuery, setSearchQuery] = useState<string>("")
-    const [sortBy, setSortBy] = useState<string>("featured")
-    const [showFilters, setShowFilters] = useState<boolean>(false)
-    const [priceRange, setPriceRange] = useState<{ min: number; max: number }>({ min: 0, max: 200 })
+    const [activeCategory, setActiveCategory] = useState("all")
+    const [searchQuery, setSearchQuery] = useState("")
+    const [sortBy, setSortBy] = useState("featured")
+    const [showFilters, setShowFilters] = useState(false)
+    const [priceRange, setPriceRange] = useState({ min: 0, max: 200 })
     const { addItem } = useCart()
     const { toast } = useToast()
 
     // Filter products based on search query and price range
-    const filterProducts = (productList: Product[]): Product[] => {
+    const filterProducts = (productList) => {
         return productList.filter(
             (product) =>
                 product.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
@@ -243,7 +224,7 @@ export default function ShopPage() {
     }
 
     // Sort products based on selected option
-    const sortProducts = (productList: Product[]): Product[] => {
+    const sortProducts = (productList) => {
         switch (sortBy) {
             case "price-low":
                 return [...productList].sort((a, b) => a.price - b.price)
@@ -258,20 +239,20 @@ export default function ShopPage() {
     }
 
     // Get the current products based on active category, search, and filters
-    const getCurrentProducts = (): Product[] => {
-        let currentProducts: Product[] = []
+    const getCurrentProducts = () => {
+        let currentProducts = []
 
         if (activeCategory === "all") {
             currentProducts = allProducts
         } else {
-            currentProducts = products[activeCategory as keyof ProductsByCategory]
+            currentProducts = products[activeCategory]
         }
 
         return sortProducts(filterProducts(currentProducts))
     }
 
     // Handle adding item to cart
-    const handleAddToCart = (product: Product) => {
+    const handleAddToCart = (product) => {
         addItem({
             id: product.id,
             name: product.name,
@@ -290,17 +271,17 @@ export default function ShopPage() {
     return (
         <div className="min-h-screen bg-white">
             {/* Header Section */}
-            <section className="w-full py-12 md:py-16 bg-gradient-to-r from-gray-50 to-gray-100">
+            <section className="w-full py-12 md:py-16 bg-gradient-to-r from-[#f4efe8] to-[#e9e2d8]">
                 <CenteredContainer>
                     <div className="flex flex-col items-center text-center space-y-4 max-w-3xl mx-auto">
-                        <div className="inline-flex items-center rounded-full bg-orange-100 px-2.5 py-0.5 text-sm font-semibold text-orange-800">
+                        <div className="inline-flex items-center rounded-full bg-[#003942]/10 px-2.5 py-0.5 text-sm font-semibold text-[#003942]">
                             <ShoppingBag className="mr-1 h-4 w-4" />
                             Shop
                         </div>
-                        <h1 className="text-4xl md:text-5xl font-bold tracking-tighter">
-                            Training <span className="text-red-600">Essentials</span>
+                        <h1 className="text-4xl md:text-5xl font-bold tracking-tighter text-[#003942]">
+                            Training <span className="text-[#003942]">Essentials</span>
                         </h1>
-                        <p className="text-xl text-gray-600 max-w-[700px]">
+                        <p className="text-xl text-[#003942]/70 max-w-[700px]">
                             Quality products hand-picked by our coaches to help you reach your fitness goals faster.
                         </p>
                     </div>
@@ -322,11 +303,11 @@ export default function ShopPage() {
                                 height={300}
                                 className="w-full h-48 object-cover"
                             />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
+                            <div className="absolute inset-0 bg-gradient-to-t from-[#003942]/70 to-transparent flex items-end">
                                 <div className="p-6 text-white">
                                     <h3 className="text-xl font-bold">Supplements</h3>
                                     <p className="text-sm opacity-90">Fuel your workouts and recovery</p>
-                                    <div className="mt-2 inline-flex items-center text-orange-300 text-sm">
+                                    <div className="mt-2 inline-flex items-center text-[#f4efe8] text-sm">
                                         Shop Now <ChevronRight className="ml-1 h-4 w-4" />
                                     </div>
                                 </div>
@@ -344,11 +325,11 @@ export default function ShopPage() {
                                 height={300}
                                 className="w-full h-48 object-cover"
                             />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
+                            <div className="absolute inset-0 bg-gradient-to-t from-[#003942]/70 to-transparent flex items-end">
                                 <div className="p-6 text-white">
                                     <h3 className="text-xl font-bold">Equipment</h3>
                                     <p className="text-sm opacity-90">Tools for effective training</p>
-                                    <div className="mt-2 inline-flex items-center text-red-300 text-sm">
+                                    <div className="mt-2 inline-flex items-center text-[#f4efe8] text-sm">
                                         Shop Now <ChevronRight className="ml-1 h-4 w-4" />
                                     </div>
                                 </div>
@@ -366,11 +347,11 @@ export default function ShopPage() {
                                 height={300}
                                 className="w-full h-48 object-cover"
                             />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
+                            <div className="absolute inset-0 bg-gradient-to-t from-[#003942]/70 to-transparent flex items-end">
                                 <div className="p-6 text-white">
                                     <h3 className="text-xl font-bold">Apparel</h3>
                                     <p className="text-sm opacity-90">Perform in comfort and style</p>
-                                    <div className="mt-2 inline-flex items-center text-orange-300 text-sm">
+                                    <div className="mt-2 inline-flex items-center text-[#f4efe8] text-sm">
                                         Shop Now <ChevronRight className="ml-1 h-4 w-4" />
                                     </div>
                                 </div>
@@ -381,49 +362,49 @@ export default function ShopPage() {
             </section>
 
             {/* Shop Section */}
-            <section className="py-12 bg-gray-50">
+            <section className="py-12 bg-[#f4efe8]">
                 <CenteredContainer>
                     <div className="flex flex-col md:flex-row gap-8">
                         {/* Sidebar Filters (Mobile Toggle) */}
                         <div className="md:hidden w-full mb-4">
                             <Button
                                 variant="outline"
-                                className="w-full flex items-center justify-between"
+                                className="w-full flex items-center justify-between border-[#003942]/20 text-[#003942]"
                                 onClick={() => setShowFilters(!showFilters)}
                             >
-                                <span className="flex items-center">
-                                    <Filter className="mr-2 h-4 w-4" />
-                                    Filters
-                                </span>
+                <span className="flex items-center">
+                  <Filter className="mr-2 h-4 w-4" />
+                  Filters
+                </span>
                                 <ChevronDown className={`h-4 w-4 transition-transform ${showFilters ? "rotate-180" : ""}`} />
                             </Button>
 
                             {showFilters && (
-                                <div className="mt-4 p-4 border rounded-lg bg-white">
+                                <div className="mt-4 p-4 border border-[#003942]/20 rounded-lg bg-white">
                                     <div className="space-y-4">
                                         <div>
-                                            <h3 className="font-medium mb-2">Price Range</h3>
+                                            <h3 className="font-medium mb-2 text-[#003942]">Price Range</h3>
                                             <div className="flex items-center gap-2">
                                                 <Input
                                                     type="number"
                                                     placeholder="Min"
                                                     value={priceRange.min}
                                                     onChange={(e) => setPriceRange({ ...priceRange, min: Number(e.target.value) })}
-                                                    className="w-24"
+                                                    className="w-24 border-[#003942]/20"
                                                 />
-                                                <span>to</span>
+                                                <span className="text-[#003942]">to</span>
                                                 <Input
                                                     type="number"
                                                     placeholder="Max"
                                                     value={priceRange.max}
                                                     onChange={(e) => setPriceRange({ ...priceRange, max: Number(e.target.value) })}
-                                                    className="w-24"
+                                                    className="w-24 border-[#003942]/20"
                                                 />
                                             </div>
                                         </div>
 
                                         <div>
-                                            <h3 className="font-medium mb-2">Categories</h3>
+                                            <h3 className="font-medium mb-2 text-[#003942]">Categories</h3>
                                             <div className="space-y-2">
                                                 <div className="flex items-center">
                                                     <input
@@ -434,7 +415,9 @@ export default function ShopPage() {
                                                         onChange={() => setActiveCategory("all")}
                                                         className="mr-2"
                                                     />
-                                                    <label htmlFor="mobile-all">All Products</label>
+                                                    <label htmlFor="mobile-all" className="text-[#003942]/70">
+                                                        All Products
+                                                    </label>
                                                 </div>
                                                 <div className="flex items-center">
                                                     <input
@@ -445,7 +428,9 @@ export default function ShopPage() {
                                                         onChange={() => setActiveCategory("supplements")}
                                                         className="mr-2"
                                                     />
-                                                    <label htmlFor="mobile-supplements">Supplements</label>
+                                                    <label htmlFor="mobile-supplements" className="text-[#003942]/70">
+                                                        Supplements
+                                                    </label>
                                                 </div>
                                                 <div className="flex items-center">
                                                     <input
@@ -456,7 +441,9 @@ export default function ShopPage() {
                                                         onChange={() => setActiveCategory("equipment")}
                                                         className="mr-2"
                                                     />
-                                                    <label htmlFor="mobile-equipment">Equipment</label>
+                                                    <label htmlFor="mobile-equipment" className="text-[#003942]/70">
+                                                        Equipment
+                                                    </label>
                                                 </div>
                                                 <div className="flex items-center">
                                                     <input
@@ -467,7 +454,9 @@ export default function ShopPage() {
                                                         onChange={() => setActiveCategory("apparel")}
                                                         className="mr-2"
                                                     />
-                                                    <label htmlFor="mobile-apparel">Apparel</label>
+                                                    <label htmlFor="mobile-apparel" className="text-[#003942]/70">
+                                                        Apparel
+                                                    </label>
                                                 </div>
                                             </div>
                                         </div>
@@ -479,29 +468,29 @@ export default function ShopPage() {
                         {/* Sidebar Filters (Desktop) */}
                         <div className="hidden md:block w-64 shrink-0">
                             <div className="sticky top-4 space-y-6">
-                                <div className="p-4 bg-white rounded-lg border">
-                                    <h3 className="font-medium text-lg mb-4">Categories</h3>
+                                <div className="p-4 bg-white rounded-lg border border-[#003942]/20">
+                                    <h3 className="font-medium text-lg mb-4 text-[#003942]">Categories</h3>
                                     <div className="space-y-2">
                                         <div
-                                            className={`px-3 py-2 rounded-md cursor-pointer ${activeCategory === "all" ? "bg-red-50 text-red-600 font-medium" : "hover:bg-gray-50"}`}
+                                            className={`px-3 py-2 rounded-md cursor-pointer ${activeCategory === "all" ? "bg-[#003942]/10 text-[#003942] font-medium" : "hover:bg-[#003942]/5 text-[#003942]/70"}`}
                                             onClick={() => setActiveCategory("all")}
                                         >
                                             All Products
                                         </div>
                                         <div
-                                            className={`px-3 py-2 rounded-md cursor-pointer ${activeCategory === "supplements" ? "bg-red-50 text-red-600 font-medium" : "hover:bg-gray-50"}`}
+                                            className={`px-3 py-2 rounded-md cursor-pointer ${activeCategory === "supplements" ? "bg-[#003942]/10 text-[#003942] font-medium" : "hover:bg-[#003942]/5 text-[#003942]/70"}`}
                                             onClick={() => setActiveCategory("supplements")}
                                         >
                                             Supplements
                                         </div>
                                         <div
-                                            className={`px-3 py-2 rounded-md cursor-pointer ${activeCategory === "equipment" ? "bg-red-50 text-red-600 font-medium" : "hover:bg-gray-50"}`}
+                                            className={`px-3 py-2 rounded-md cursor-pointer ${activeCategory === "equipment" ? "bg-[#003942]/10 text-[#003942] font-medium" : "hover:bg-[#003942]/5 text-[#003942]/70"}`}
                                             onClick={() => setActiveCategory("equipment")}
                                         >
                                             Equipment
                                         </div>
                                         <div
-                                            className={`px-3 py-2 rounded-md cursor-pointer ${activeCategory === "apparel" ? "bg-red-50 text-red-600 font-medium" : "hover:bg-gray-50"}`}
+                                            className={`px-3 py-2 rounded-md cursor-pointer ${activeCategory === "apparel" ? "bg-[#003942]/10 text-[#003942] font-medium" : "hover:bg-[#003942]/5 text-[#003942]/70"}`}
                                             onClick={() => setActiveCategory("apparel")}
                                         >
                                             Apparel
@@ -509,8 +498,8 @@ export default function ShopPage() {
                                     </div>
                                 </div>
 
-                                <div className="p-4 bg-white rounded-lg border">
-                                    <h3 className="font-medium text-lg mb-4">Price Range</h3>
+                                <div className="p-4 bg-white rounded-lg border border-[#003942]/20">
+                                    <h3 className="font-medium text-lg mb-4 text-[#003942]">Price Range</h3>
                                     <div className="space-y-4">
                                         <div className="flex items-center gap-2">
                                             <Input
@@ -518,21 +507,21 @@ export default function ShopPage() {
                                                 placeholder="Min"
                                                 value={priceRange.min}
                                                 onChange={(e) => setPriceRange({ ...priceRange, min: Number(e.target.value) })}
-                                                className="w-24"
+                                                className="w-24 border-[#003942]/20"
                                             />
-                                            <span>to</span>
+                                            <span className="text-[#003942]">to</span>
                                             <Input
                                                 type="number"
                                                 placeholder="Max"
                                                 value={priceRange.max}
                                                 onChange={(e) => setPriceRange({ ...priceRange, max: Number(e.target.value) })}
-                                                className="w-24"
+                                                className="w-24 border-[#003942]/20"
                                             />
                                         </div>
                                         <Button
                                             variant="outline"
                                             size="sm"
-                                            className="w-full"
+                                            className="w-full border-[#003942]/20 text-[#003942] hover:bg-[#003942]/10"
                                             onClick={() => setPriceRange({ min: 0, max: 200 })}
                                         >
                                             Reset
@@ -547,18 +536,18 @@ export default function ShopPage() {
                             {/* Search and Sort */}
                             <div className="flex flex-col sm:flex-row gap-4 mb-6">
                                 <div className="relative flex-1">
-                                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[#003942]/40" />
                                     <Input
                                         placeholder="Search products..."
                                         value={searchQuery}
                                         onChange={(e) => setSearchQuery(e.target.value)}
-                                        className="pl-10"
+                                        className="pl-10 border-[#003942]/20"
                                     />
                                 </div>
                                 <select
                                     value={sortBy}
                                     onChange={(e) => setSortBy(e.target.value)}
-                                    className="px-3 py-2 border rounded-md bg-white"
+                                    className="px-3 py-2 border border-[#003942]/20 rounded-md bg-white text-[#003942]"
                                 >
                                     <option value="featured">Featured</option>
                                     <option value="price-low">Price: Low to High</option>
@@ -572,7 +561,7 @@ export default function ShopPage() {
                                 {getCurrentProducts().map((product) => (
                                     <div
                                         key={product.id}
-                                        className="bg-white rounded-lg border overflow-hidden transition-all hover:shadow-md"
+                                        className="bg-white rounded-lg border border-[#003942]/10 overflow-hidden transition-all hover:shadow-md"
                                     >
                                         <div className="relative">
                                             <Image
@@ -583,16 +572,16 @@ export default function ShopPage() {
                                                 className="w-full h-64 object-cover"
                                             />
                                             {product.bestseller && (
-                                                <div className="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded">
+                                                <div className="absolute top-2 left-2 bg-[#003942] text-white text-xs font-bold px-2 py-1 rounded">
                                                     BESTSELLER
                                                 </div>
                                             )}
                                         </div>
                                         <div className="p-4">
-                                            <div className="text-sm text-gray-500 mb-1">{product.category}</div>
-                                            <h3 className="font-medium text-lg mb-1">{product.name}</h3>
+                                            <div className="text-sm text-[#003942]/50 mb-1">{product.category}</div>
+                                            <h3 className="font-medium text-lg mb-1 text-[#003942]">{product.name}</h3>
                                             <div className="flex items-center mb-2">
-                                                <div className="flex items-center text-orange-500 mr-2">
+                                                <div className="flex items-center text-[#003942] mr-2">
                                                     {[...Array(5)].map((_, i) => (
                                                         <Star
                                                             key={i}
@@ -600,15 +589,15 @@ export default function ShopPage() {
                                                         />
                                                     ))}
                                                 </div>
-                                                <span className="text-sm text-gray-500">
-                                                    {product.rating} ({product.reviews})
-                                                </span>
+                                                <span className="text-sm text-[#003942]/50">
+                          {product.rating} ({product.reviews})
+                        </span>
                                             </div>
                                             <div className="flex items-center justify-between">
-                                                <span className="font-bold text-lg">${product.price.toFixed(2)}</span>
+                                                <span className="font-bold text-lg text-[#003942]">${product.price.toFixed(2)}</span>
                                                 <Button
                                                     size="sm"
-                                                    className="bg-gradient-to-r from-red-600 to-orange-500 hover:from-red-700 hover:to-orange-600"
+                                                    className="bg-[#003942] text-[#f4efe8] hover:bg-[#004e5a]"
                                                     onClick={() => handleAddToCart(product)}
                                                 >
                                                     Add to Cart
@@ -622,9 +611,9 @@ export default function ShopPage() {
                             {/* Empty State */}
                             {getCurrentProducts().length === 0 && (
                                 <div className="text-center py-12">
-                                    <ShoppingBag className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                                    <h3 className="text-lg font-medium text-gray-900 mb-1">No products found</h3>
-                                    <p className="text-gray-500">Try adjusting your search or filter criteria</p>
+                                    <ShoppingBag className="mx-auto h-12 w-12 text-[#003942]/30 mb-4" />
+                                    <h3 className="text-lg font-medium text-[#003942] mb-1">No products found</h3>
+                                    <p className="text-[#003942]/50">Try adjusting your search or filter criteria</p>
                                 </div>
                             )}
                         </div>
@@ -633,4 +622,5 @@ export default function ShopPage() {
             </section>
         </div>
     )
+
 }

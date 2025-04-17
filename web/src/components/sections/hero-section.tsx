@@ -17,15 +17,15 @@ export default function HeroSection() {
     return (
         <section className="relative w-full overflow-hidden py-12 md:py-24 lg:py-32 xl:py-48">
             {/* Background with gradient */}
-            <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-gray-100 to-orange-50"></div>
+            <div className="absolute inset-0 bg-gradient-to-br from-[#f4efe8] via-[#f4efe8] to-[#e9e2d8]"></div>
 
             {/* Decorative elements */}
-            <div className="absolute top-20 right-[10%] h-64 w-64 rounded-full bg-red-100 opacity-30 blur-3xl"></div>
-            <div className="absolute bottom-20 left-[10%] h-64 w-64 rounded-full bg-orange-100 opacity-30 blur-3xl"></div>
+            <div className="absolute top-20 right-[10%] h-64 w-64 rounded-full bg-[#003942]/10 opacity-30 blur-3xl"></div>
+            <div className="absolute bottom-20 left-[10%] h-64 w-64 rounded-full bg-[#003942]/10 opacity-30 blur-3xl"></div>
 
             {/* Diagonal lines decoration */}
             <div className="absolute inset-0 opacity-5">
-                <div className="h-full w-full bg-[linear-gradient(45deg,#f97316_1px,transparent_1px),linear-gradient(-45deg,#ef4444_1px,transparent_1px)] bg-[size:40px_40px]"></div>
+                <div className="h-full w-full bg-[linear-gradient(45deg,#003942_1px,transparent_1px),linear-gradient(-45deg,#003942_1px,transparent_1px)] bg-[size:40px_40px]"></div>
             </div>
 
             <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -34,14 +34,13 @@ export default function HeroSection() {
                         <div
                             className={`space-y-4 transition-all duration-700 ${isLoaded ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"}`}
                         >
-                            <div className="inline-flex items-center rounded-full border border-red-200 bg-red-50 px-3 py-1 text-sm font-medium text-red-600">
+                            <div className="inline-flex items-center rounded-full border border-[#003942]/20 bg-[#003942]/10 px-3 py-1 text-sm font-medium text-[#003942]">
                                 Expert Fitness Coaching
                             </div>
-                            <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none">
-                                Transform Your Body, Transform Your{" "}
-                                <span className="bg-gradient-to-r from-red-600 to-orange-500 bg-clip-text text-transparent">Life</span>
+                            <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none text-[#003942]">
+                                Transform Your Body, Transform Your <span className="text-[#003942]">Life</span>
                             </h1>
-                            <p className="max-w-[600px] text-gray-600 md:text-xl">
+                            <p className="max-w-[600px] text-[#003942]/80 md:text-xl">
                                 Expert coaching, personalized plans, and proven results. Start your fitness journey today and become the
                                 best version of yourself.
                             </p>
@@ -50,7 +49,7 @@ export default function HeroSection() {
                             className={`flex flex-col gap-3 min-[400px]:flex-row transition-all duration-700 delay-300 ${isLoaded ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"}`}
                         >
                             <Button
-                                className="bg-gradient-to-r from-red-600 to-orange-500 hover:from-red-700 hover:to-orange-600 text-white shadow-md hover:shadow-lg transition-all"
+                                className="bg-[#003942] text-[#f4efe8] hover:bg-[#004e5a] shadow-md hover:shadow-lg transition-all"
                                 size="lg"
                             >
                                 Start Your Journey
@@ -59,12 +58,11 @@ export default function HeroSection() {
                             <Button
                                 variant="outline"
                                 size="lg"
-                                className="border-red-200 text-red-600 hover:bg-red-50 transition-colors"
+                                className="border-[#003942]/20 text-[#003942] hover:bg-[#003942]/10 transition-colors"
                             >
                                 Learn More
                             </Button>
                         </div>
-
                     </div>
 
                     <div
@@ -72,7 +70,7 @@ export default function HeroSection() {
                     >
                         <div className="relative">
                             {/* Image with styling */}
-                            <div className="overflow-hidden rounded-2xl  p-1 shadow-xl">
+                            <div className="overflow-hidden rounded-2xl bg-[#003942] p-1 shadow-xl">
                                 <Image
                                     src="/placeholder.svg?height=550&width=550"
                                     width={550}
@@ -84,8 +82,8 @@ export default function HeroSection() {
                             </div>
 
                             {/* Decorative element */}
-                            <div className="absolute -bottom-6 -left-6 h-24 w-24 rounded-full border-8 border-white bg-orange-100"></div>
-                            <div className="absolute -top-6 -right-6 h-16 w-16 rounded-full border-8 border-white bg-red-100"></div>
+                            <div className="absolute -bottom-6 -left-6 h-24 w-24 rounded-full border-8 border-white bg-[#f4efe8]"></div>
+                            <div className="absolute -top-6 -right-6 h-16 w-16 rounded-full border-8 border-white bg-[#003942]/20"></div>
                         </div>
                     </div>
                 </div>

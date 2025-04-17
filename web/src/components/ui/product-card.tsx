@@ -47,15 +47,11 @@ export default function ProductCard({ id, name, price, image, category }: Produc
                 />
             </div>
             <div className="p-4">
-                <div className="text-sm text-gray-500">{category}</div>
-                <h3 className="font-medium">{name}</h3>
+                <div className="text-sm text-[#003942]/70">{category}</div>
+                <h3 className="font-medium text-[#003942]">{name}</h3>
                 <div className="mt-1 flex items-center justify-between">
-                    <span className="font-bold">${price.toFixed(2)}</span>
-                    <Button
-                        size="sm"
-                        className="bg-gradient-to-r from-red-600 to-orange-500 hover:from-red-700 hover:to-orange-600"
-                        onClick={handleAddToCart}
-                    >
+                    <span className="font-bold text-[#003942]">${price.toFixed(2)}</span>
+                    <Button size="sm" className="bg-[#003942] text-[#f4efe8] hover:bg-[#004e5a]" onClick={handleAddToCart}>
                         Add to Cart
                     </Button>
                 </div>
