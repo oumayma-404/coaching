@@ -15,22 +15,15 @@ export default function HeroSection() {
     }, [])
 
     return (
-        <section className="relative w-full overflow-hidden py-12 md:py-24 lg:py-32 xl:py-48">
-            {/* Background with gradient */}
-            <div className="absolute inset-0 bg-gradient-to-br from-[#f4efe8] via-[#f4efe8] to-[#e9e2d8]"></div>
-
+        <section className="relative w-full overflow-hidden py-12 md:py-24 lg:py-32 xl:py-40 bg-[#f4efe8]">
             {/* Decorative elements */}
-            <div className="absolute top-20 right-[10%] h-64 w-64 rounded-full bg-[#003942]/10 opacity-30 blur-3xl"></div>
-            <div className="absolute bottom-20 left-[10%] h-64 w-64 rounded-full bg-[#003942]/10 opacity-30 blur-3xl"></div>
+            <div className="absolute top-20 right-[10%] h-64 w-64 rounded-full bg-[#003942]/10 opacity-30 blur-3xl hidden md:block"></div>
+            <div className="absolute bottom-20 left-[10%] h-64 w-64 rounded-full bg-[#003942]/10 opacity-30 blur-3xl hidden md:block"></div>
 
-            {/* Diagonal lines decoration */}
-            <div className="absolute inset-0 opacity-5">
-                <div className="h-full w-full bg-[linear-gradient(45deg,#003942_1px,transparent_1px),linear-gradient(-45deg,#003942_1px,transparent_1px)] bg-[size:40px_40px]"></div>
-            </div>
-
-            <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <div className="grid gap-6 lg:grid-cols-2 lg:gap-12 xl:grid-cols-2">
-                    <div className="flex flex-col justify-center space-y-6">
+            <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 z-10">
+                <div className="flex flex-col md:block">
+                    {/* Text content - always comes first in DOM */}
+                    <div className="max-w-xl relative md:mb-0 mb-8">
                         <div
                             className={`space-y-4 transition-all duration-700 ${isLoaded ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"}`}
                         >
@@ -46,7 +39,7 @@ export default function HeroSection() {
                             </p>
                         </div>
                         <div
-                            className={`flex flex-col gap-3 min-[400px]:flex-row transition-all duration-700 delay-300 ${isLoaded ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"}`}
+                            className={`flex flex-col gap-3 min-[400px]:flex-row mt-8 transition-all duration-700 delay-300 ${isLoaded ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"}`}
                         >
                             <Button
                                 className="bg-[#003942] text-[#f4efe8] hover:bg-[#004e5a] shadow-md hover:shadow-lg transition-all"
@@ -65,28 +58,31 @@ export default function HeroSection() {
                         </div>
                     </div>
 
-                    <div
-                        className={`flex items-center justify-center transition-all duration-1000 ${isLoaded ? "translate-x-0 opacity-100" : "translate-x-8 opacity-0"}`}
-                    >
-                        <div className="relative">
-                            {/* Image with styling */}
-                            <div className="overflow-hidden rounded-2xl bg-[#003942] p-1 shadow-xl">
-                                <Image
-                                    src="/placeholder.svg?height=550&width=550"
-                                    width={550}
-                                    height={550}
-                                    alt="Hero Image"
-                                    className="rounded-xl object-cover"
-                                    priority
-                                />
-                            </div>
-
-                            {/* Decorative element */}
-                            <div className="absolute -bottom-6 -left-6 h-24 w-24 rounded-full border-8 border-white bg-[#f4efe8]"></div>
-                            <div className="absolute -top-6 -right-6 h-16 w-16 rounded-full border-8 border-white bg-[#003942]/20"></div>
-                        </div>
+                    {/* Image section - comes after text in DOM but positioned differently on desktop */}
+                    <div className="relative w-full h-64 md:hidden mb-8 rounded-lg overflow-hidden">
+                        <Image
+                            src="/images/coach.jpeg"
+                            alt="Hero Image"
+                            fill
+                            priority
+                            className="object-cover object-center"
+                        />
+                        <div className="absolute inset-0 bg-[#003942]/20"></div>
                     </div>
                 </div>
+            </div>
+
+            {/* Large image that overlaps from the right side - desktop only */}
+            <div className="absolute top-0 right-0 w-[50%] h-full overflow-hidden z-0 hidden md:block">
+                <div className="absolute -left-32 top-0 h-full w-32 bg-gradient-to-r from-[#f4efe8] to-transparent z-10"></div>
+                <Image
+                    src="/images/coach.jpeg"
+                    alt="Hero Image"
+                    fill
+                    priority
+                    className="object-cover object-center"
+                />
+                <div className="absolute inset-0 bg-[#003942]/20"></div>
             </div>
         </section>
     )

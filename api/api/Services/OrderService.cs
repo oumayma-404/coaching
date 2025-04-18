@@ -10,18 +10,22 @@ public class OrderService : IOrderService
     private readonly IRepository<Order> _orderRepository;
     private readonly IProductService _productService;
     private readonly ILogger<OrderService> _logger;
+    private readonly IEmailService _emailService;
 
     public OrderService(
-        IRepository<Order> orderRepository, 
+        IRepository<Order> orderRepository,
         IProductService productService,
+        IEmailService emailService,
         ILogger<OrderService> logger)
     {
         _orderRepository = orderRepository;
         _productService = productService;
+        _emailService = emailService;
         _logger = logger;
     }
 
-    public async Task<Order> CreateOrderAsync(string email, string name, List<OrderItem> items, string shippingAddress)
+    public async Task<Order> CreateOrderAsync(string email, string name, List<OrderItem> items, string shippingAddress,
+        string paymentIntentId)
     {
         try
         {
@@ -33,6 +37,7 @@ public class OrderService : IOrderService
                 {
                     throw new ArgumentException($"Product with ID {item.ProductId} not found");
                 }
+
                 item.Price = product.Price;
             }
 
@@ -44,10 +49,12 @@ public class OrderService : IOrderService
                 Total = items.Sum(i => i.Price * i.Quantity),
                 ShippingAddress = shippingAddress,
                 Status = OrderStatus.Pending,
-                OrderDate = DateTime.UtcNow
+                OrderDate = DateTime.UtcNow, PaymentIntentId = paymentIntentId
             };
 
             await _orderRepository.AddAsync(order);
+            await SendOrderConfirmationAsync(order.Id);
+
             return order;
         }
         catch (Exception ex)
@@ -57,12 +64,32 @@ public class OrderService : IOrderService
         }
     }
 
+    public async Task SendOrderConfirmationAsync(int orderId)
+    {
+        var order = await GetOrderByIdAsync(orderId);
+        if (order == null)
+        {
+            throw new ArgumentException($"Order with ID {orderId} not found");
+        }
+
+        try
+        {
+            await _emailService.SendOrderConfirmationAsync(order.CustomerEmail, order);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to send confirmation email for order {OrderId}", orderId);
+            // Consider whether to throw or just log the error
+            throw;
+        }
+    }
+
     public async Task<Order> GetOrderByIdAsync(int id)
     {
         try
         {
             var order = await _orderRepository.GetByIdAsync(id);
-            
+
             if (order == null)
             {
                 _logger.LogWarning("Order with ID {OrderId} not found", id);
@@ -100,7 +127,7 @@ public class OrderService : IOrderService
             }
 
             // Assuming your repository supports querying
-            var orders = await _orderRepository.FindAllAsync(o => 
+            var orders = await _orderRepository.FindAllAsync(o =>
                 o.CustomerEmail.ToLower() == email.ToLower());
 
             // Load product information for each order item
@@ -138,7 +165,7 @@ public class OrderService : IOrderService
             }
 
             order.Status = status;
-            
+
             // Add status change history if needed
 
             await _orderRepository.UpdateAsync(order);

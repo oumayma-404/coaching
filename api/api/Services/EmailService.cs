@@ -1,8 +1,9 @@
+using System.Net.Http.Headers;
+using System.Text;
+using System.Text.Json;
 using api.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using SendGrid;
-using SendGrid.Helpers.Mail;
 
 namespace api.Services;
 
@@ -10,50 +11,67 @@ public class EmailService : IEmailService
 {
     private readonly IConfiguration _config;
     private readonly ILogger<EmailService> _logger;
+    private readonly HttpClient _httpClient;
 
     public EmailService(IConfiguration config, ILogger<EmailService> logger)
     {
         _config = config;
         _logger = logger;
+        _httpClient = new HttpClient();
     }
 
     public async Task SendOrderConfirmationAsync(string email, Order order)
     {
-        var apiKey = _config["SendGrid:ApiKey"];
-        var client = new SendGridClient(apiKey);
-        var from = new EmailAddress(_config["EmailSettings:FromEmail"], "Sports Coach");
-        var to = new EmailAddress(email);
         var subject = $"Your Order #{order.Id} Confirmation";
-
-        var plainTextContent = $"Thank you for your order #{order.Id}. Total: {order.Total:C}";
+        var textContent = $"Thank you for your order #{order.Id}. Total: {order.Total:C}";
         var htmlContent = BuildOrderConfirmationHtml(order);
 
-        var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
-        var response = await client.SendEmailAsync(msg);
-
-        if (!response.IsSuccessStatusCode)
-        {
-            _logger.LogError($"Failed to send confirmation email to {email}. Status: {response.StatusCode}");
-        }
+        await SendEmailAsync(email, subject, textContent, htmlContent);
     }
 
     public async Task SendOrderStatusUpdateAsync(string email, Order order)
     {
-        var apiKey = _config["SendGrid:ApiKey"];
-        var client = new SendGridClient(apiKey);
-        var from = new EmailAddress(_config["EmailSettings:FromEmail"], "Sports Coach");
-        var to = new EmailAddress(email);
         var subject = $"Update on Your Order #{order.Id}";
-
-        var plainTextContent = $"Your order #{order.Id} status has been updated to: {order.Status}.";
+        var textContent = $"Your order #{order.Id} status has been updated to: {order.Status}.";
         var htmlContent = BuildOrderStatusUpdateHtml(order);
 
-        var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
-        var response = await client.SendEmailAsync(msg);
+        await SendEmailAsync(email, subject, textContent, htmlContent);
+    }
+
+    private async Task SendEmailAsync(string toEmail, string subject, string textContent, string htmlContent)
+    {
+        var apiKey = _config["Mailjet:ApiKey"];
+        var apiSecret = _config["Mailjet:ApiSecret"];
+        var fromEmail = _config["EmailSettings:FromEmail"];
+        var fromName = "Sports Coach";
+
+        var authToken = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{apiKey}:{apiSecret}"));
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authToken);
+
+        var body = new
+        {
+            Messages = new[]
+            {
+                new
+                {
+                    From = new { Email = fromEmail, Name = fromName },
+                    To = new[] { new { Email = toEmail } },
+                    Subject = subject,
+                    TextPart = textContent,
+                    HTMLPart = htmlContent
+                }
+            }
+        };
+
+        var json = JsonSerializer.Serialize(body);
+        var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+        var response = await _httpClient.PostAsync("https://api.mailjet.com/v3.1/send", content);
 
         if (!response.IsSuccessStatusCode)
         {
-            _logger.LogError($"Failed to send status update email to {email}. Status: {response.StatusCode}");
+            var responseBody = await response.Content.ReadAsStringAsync();
+            _logger.LogError($"Failed to send email to {toEmail}. Status: {response.StatusCode}. Body: {responseBody}");
         }
     }
 

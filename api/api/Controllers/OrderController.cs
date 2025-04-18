@@ -42,6 +42,7 @@ public class OrdersController : ControllerBase
                 request.Email,
                 request.Name,
                 orderItems,
+                request.PaymentIntentId,
                 request.ShippingAddress);
 
             return CreatedAtAction(nameof(GetOrder), new { id = order.Id }, order);
@@ -101,6 +102,7 @@ public class OrderRequest
     public string Name { get; set; }
     public List<OrderItemRequest> Items { get; set; }
     public string ShippingAddress { get; set; }
+    public string PaymentIntentId { get; set; } // Optional, for payment processing
 }
 
 public class OrderItemRequest
