@@ -31,7 +31,7 @@ export default function Footer() {
                     <div className="flex flex-col items-center md:items-start gap-4 mb-6 md:mb-0">
                         <div className="flex items-center gap-2">
                             <Dumbbell className="h-6 w-6 text-[#003942]" />
-                            <span className="font-bold text-lg text-[#003942]">FitCoach</span>
+                            <span className="font-bold text-lg text-[#003942]">FitWay</span>
                         </div>
                         <p className="text-center md:text-left text-sm text-[#003942]/70 max-w-xs">
                             Empowering individuals to achieve their fitness goals through expert coaching and personalized programs.
@@ -106,7 +106,7 @@ export default function Footer() {
 
                 {/* Copyright */}
                 <div className="py-6 border-t flex flex-col md:flex-row items-center justify-between text-sm text-[#003942]/70">
-                    <p>&copy; {new Date().getFullYear()} FitCoach. All rights reserved.</p>
+                    <p>&copy; {new Date().getFullYear()} FitWay. All rights reserved.</p>
                     <p className="mt-2 md:mt-0">Made with passion for a healthier world.</p>
                 </div>
             </div>

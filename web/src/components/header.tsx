@@ -19,7 +19,7 @@ export default function Header() {
                 <div className="flex items-center gap-2 font-bold text-xl">
                     <Link href="/" className="flex items-center gap-2">
                         <Dumbbell className="h-6 w-6 text-[#003942]"/>
-                        <span className="text-[#003942]">FitCoach</span>
+                        <span className="text-[#003942]">FitWay</span>
                     </Link>
                 </div>
 
