@@ -13,7 +13,7 @@ export default function Header() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
     return (
-        <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
+        <header className="sticky top-0 z-50 w-full border-b border-[#003942]/10 bg-[#f4efe8]/80 backdrop-blur-sm supports-[backdrop-filter]:bg-[#f4efe8]/60">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex h-16 items-center justify-between">
                 <div className="flex items-center gap-2 font-bold text-xl">
                     <Link href="/" className="flex items-center gap-2">
@@ -64,7 +64,7 @@ export default function Header() {
 
             {/* Mobile menu */}
             {mobileMenuOpen && (
-                <div className="md:hidden border-t">
+                <div className="md:hidden border-t bg-[#f4efe8]/95 backdrop-blur-sm">
                     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4 flex flex-col space-y-4">
                         <Link
                             href="/"
