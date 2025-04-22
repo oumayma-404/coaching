@@ -15,7 +15,7 @@ export default function HeroSection() {
     }, [])
 
     return (
-        <section className="relative w-full overflow-hidden min-h-[70vh] md:min-h-screen flex items-center">
+        <section className="relative w-full overflow-hidden min-h-[90vh] md:min-h-screen flex items-center">
             {/* Background Image Container */}
             <div className="absolute inset-0 w-full h-full z-0 overflow-hidden">
                 <div
