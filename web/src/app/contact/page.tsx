@@ -270,7 +270,7 @@ export default function ContactPage() {
             </section>
 
             {/* FAQ Section */}
-            <section className="py-16 bg-white">
+            {/*<section className="py-16 bg-white">
                 <CenteredContainer>
                     <div className="text-center mb-12">
                         <h2 className="text-3xl font-bold text-[#003942]">Frequently Asked Questions</h2>
@@ -337,7 +337,7 @@ export default function ContactPage() {
                         </div>
                     </div>
                 </CenteredContainer>
-            </section>
+            </section>*/}
 
             {/* CTA Section */}
             <section className="py-16 bg-[#003942]">

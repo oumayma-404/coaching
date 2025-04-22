@@ -108,7 +108,7 @@ export default function CoachingPage() {
             </section>
 
             {/* Coaching Plans Section - Enhanced with visual elements */}
-            <section className="py-20 bg-[#f4efe8] relative overflow-hidden">
+            <section id={"coaching-plans"} className="py-20 bg-[#f4efe8] relative overflow-hidden">
                 {/* Decorative background elements */}
                 <div className="absolute top-0 right-0 w-64 h-64 bg-[#003942]/5 rounded-full transform translate-x-1/2 -translate-y-1/2"></div>
                 <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#003942]/5 rounded-full transform -translate-x-1/2 translate-y-1/2"></div>

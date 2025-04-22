@@ -2,6 +2,7 @@
 /* eslint-disable react/no-unescaped-entities */
 import { Button } from "@/components/ui/button"
 import { ChevronRight } from "lucide-react"
+import Link from "next/link";
 
 export default function CtaSection() {
     return (
@@ -15,10 +16,13 @@ export default function CtaSection() {
                         </p>
                     </div>
                     <div className="flex flex-col gap-2 min-[400px]:flex-row">
+                        <Link href="/coaching#coaching-plans">
+
                         <Button size="lg" className="bg-[#f4efe8] text-[#003942] hover:bg-white">
                             Start Your Journey
                             <ChevronRight className="ml-2 h-4 w-4" />
                         </Button>
+                        </Link>
                         <Button variant="outline" size="lg" className="border-[#f4efe8] text-[#f4efe8] hover:bg-[#f4efe8]/10">
                             Book a Consultation
                         </Button>

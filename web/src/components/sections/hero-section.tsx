@@ -6,6 +6,7 @@ import { useEffect, useState } from "react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { ChevronRight } from "lucide-react"
+import Link from "next/link";
 
 export default function HeroSection() {
     const [isLoaded, setIsLoaded] = useState(false)
@@ -59,6 +60,8 @@ export default function HeroSection() {
                     <div
                         className={`flex flex-col gap-3 min-[400px]:flex-row mt-8 transition-all duration-700 delay-300 ${isLoaded ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"}`}
                     >
+                        <Link href="/coaching#coaching-plans">
+
                         <Button
                             className="bg-[#f4efe8] text-[#003942] hover:bg-white shadow-md hover:shadow-lg transition-all"
                             size="lg"
@@ -66,6 +69,7 @@ export default function HeroSection() {
                             Start Your Journey
                             <ChevronRight className="ml-2 h-4 w-4" />
                         </Button>
+                        </Link>
                     </div>
                 </div>
             </div>

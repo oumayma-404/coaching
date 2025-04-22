@@ -3,6 +3,7 @@
 import { Trophy, ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import BeforeAfterCard from "@/components/ui/before-after-card"
+import Link from "next/link";
 
 export default function ResultsSection() {
     return (
@@ -46,10 +47,13 @@ export default function ResultsSection() {
                     />
                 </div>
                 <div className="flex justify-center">
+                    <Link href="/results">
+
                     <Button variant="outline" size="lg" className="border-[#003942] text-[#003942] hover:bg-[#003942]/10">
                         View More Success Stories
                         <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
+                    </Link>
                 </div>
             </div>
         </section>

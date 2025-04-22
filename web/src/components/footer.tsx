@@ -38,7 +38,7 @@ export default function Footer() {
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
+                    <div className="grid grid-cols-2 md:grid-cols-2 gap-8">
                         <div>
                             <h4 className="font-medium mb-3 text-[#003942]">Quick Links</h4>
                             <ul className="space-y-2 text-sm">
@@ -69,27 +69,7 @@ export default function Footer() {
                                 </li>
                             </ul>
                         </div>
-
-                        <div>
-                            <h4 className="font-medium mb-3 text-[#003942]">Legal</h4>
-                            <ul className="space-y-2 text-sm">
-                                <li>
-                                    <Link href="#" className="text-[#003942]/70 hover:text-[#003942] transition-colors">
-                                        Terms of Service
-                                    </Link>
-                                </li>
-                                <li>
-                                    <Link href="#" className="text-[#003942]/70 hover:text-[#003942] transition-colors">
-                                        Privacy Policy
-                                    </Link>
-                                </li>
-                                <li>
-                                    <Link href="#" className="text-[#003942]/70 hover:text-[#003942] transition-colors">
-                                        Cookie Policy
-                                    </Link>
-                                </li>
-                            </ul>
-                        </div>
+                        
 
                         <div className="col-span-2 md:col-span-1">
                             <h4 className="font-medium mb-3 text-[#003942]">Connect With Us</h4>
