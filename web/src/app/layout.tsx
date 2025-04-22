@@ -10,7 +10,7 @@ import { Toaster } from "@/components/ui/toaster"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-    title: "FitCoach - Transform Your Body, Transform Your Life",
+    title: "FitWay - Transform Your Body, Transform Your Life",
     description: "Expert fitness coaching and personalized training programs",
 }
 
