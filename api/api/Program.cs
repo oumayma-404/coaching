@@ -70,10 +70,16 @@ using (var scope = app.Services.CreateScope())
 app.UseStaticFiles(); // for wwwroot
 
 // If you're saving files to a custom folder like "uploads":
+var uploadsPath = Path.Combine(builder.Environment.ContentRootPath, "uploads");
+
+if (!Directory.Exists(uploadsPath))
+{
+    Directory.CreateDirectory(uploadsPath);
+}
+
 app.UseStaticFiles(new StaticFileOptions
 {
-    FileProvider = new PhysicalFileProvider(
-        Path.Combine(builder.Environment.ContentRootPath, "uploads")),
+    FileProvider = new PhysicalFileProvider(uploadsPath),
     RequestPath = "/uploads"
 });
 
