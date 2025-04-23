@@ -2,17 +2,17 @@
 /* eslint-disable react/no-unescaped-entities */
 "use client"
 
-import { useState } from "react"
+import {useState} from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { ShoppingBag, Trash2, ChevronRight, ArrowLeft } from "lucide-react"
+import {Button} from "@/components/ui/button"
+import {Input} from "@/components/ui/input"
+import {ShoppingBag, Trash2, ChevronRight, ArrowLeft} from "lucide-react"
 import CenteredContainer from "@/layout/centered-container"
-import { useCart } from "@/context/cart-context"
+import {useCart} from "@/context/cart-context"
 
 export default function BasketPage() {
-    const { items, removeItem, updateQuantity, clearCart } = useCart()
+    const {items, removeItem, updateQuantity, clearCart} = useCart()
     const [promoCode, setPromoCode] = useState("")
     const [promoApplied, setPromoApplied] = useState(false)
 
@@ -36,8 +36,9 @@ export default function BasketPage() {
             <section className="w-full py-12 md:py-16 bg-white border-b border-[#003942]/10">
                 <CenteredContainer>
                     <div className="flex flex-col items-center text-center space-y-4 max-w-3xl mx-auto">
-                        <div className="inline-flex items-center rounded-full bg-[#003942]/10 px-2.5 py-0.5 text-sm font-semibold text-[#003942]">
-                            <ShoppingBag className="mr-1 h-4 w-4" />
+                        <div
+                            className="inline-flex items-center rounded-full bg-[#003942]/10 px-2.5 py-0.5 text-sm font-semibold text-[#003942]">
+                            <ShoppingBag className="mr-1 h-4 w-4"/>
                             Your Cart
                         </div>
                         <h1 className="text-3xl md:text-4xl font-bold tracking-tighter text-[#003942]">
@@ -57,15 +58,19 @@ export default function BasketPage() {
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                             {/* Cart Items */}
                             <div className="lg:col-span-2">
-                                <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-[#003942]/10">
+                                <div
+                                    className="bg-white rounded-xl shadow-sm overflow-hidden border border-[#003942]/10">
                                     <div className="p-6 border-b border-[#003942]/10">
-                                        <h2 className="text-xl font-bold text-[#003942]">Cart Items ({items.length})</h2>
+                                        <h2 className="text-xl font-bold text-[#003942]">Cart Items
+                                            ({items.length})</h2>
                                     </div>
 
                                     <div className="divide-y divide-[#003942]/10">
                                         {items.map((item) => (
-                                            <div key={item.id} className="p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                                                <div className="h-20 w-20 rounded-md overflow-hidden bg-[#f4efe8] flex-shrink-0">
+                                            <div key={item.id}
+                                                 className="p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                                                <div
+                                                    className="h-20 w-20 rounded-md overflow-hidden bg-[#f4efe8] flex-shrink-0">
                                                     <Image
                                                         src={item.image || "/placeholder.svg"}
                                                         alt={item.name}
@@ -105,7 +110,7 @@ export default function BasketPage() {
                                                         onClick={() => removeItem(item.id)}
                                                         className="text-[#003942]/40 hover:text-[#003942] transition-colors"
                                                     >
-                                                        <Trash2 className="h-5 w-5" />
+                                                        <Trash2 className="h-5 w-5"/>
                                                     </button>
                                                 </div>
                                             </div>
@@ -117,7 +122,7 @@ export default function BasketPage() {
                                             href="/shop"
                                             className="inline-flex items-center text-sm font-medium text-[#003942]/70 hover:text-[#003942] transition-colors"
                                         >
-                                            <ArrowLeft className="mr-1 h-4 w-4" />
+                                            <ArrowLeft className="mr-1 h-4 w-4"/>
                                             Continue Shopping
                                         </Link>
                                         <Button
@@ -133,7 +138,8 @@ export default function BasketPage() {
 
                             {/* Order Summary */}
                             <div className="lg:col-span-1">
-                                <div className="bg-white rounded-xl shadow-sm overflow-hidden sticky top-4 border border-[#003942]/10">
+                                <div
+                                    className="bg-white rounded-xl shadow-sm overflow-hidden sticky top-4 border border-[#003942]/10">
                                     <div className="p-6 border-b border-[#003942]/10">
                                         <h2 className="text-xl font-bold text-[#003942]">Order Summary</h2>
                                     </div>
@@ -153,7 +159,8 @@ export default function BasketPage() {
 
                                         <div className="flex justify-between text-sm">
                                             <span className="text-[#003942]/70">Shipping</span>
-                                            <span className="text-[#003942]">{shipping === 0 ? "Free" : `$${shipping.toFixed(2)}`}</span>
+                                            <span
+                                                className="text-[#003942]">{shipping === 0 ? "Free" : `$${shipping.toFixed(2)}`}</span>
                                         </div>
 
                                         <div className="flex justify-between text-sm">
@@ -172,7 +179,8 @@ export default function BasketPage() {
                                         </div>
 
                                         <div className="pt-4">
-                                            <label htmlFor="promo" className="block text-sm font-medium text-[#003942] mb-2">
+                                            <label htmlFor="promo"
+                                                   className="block text-sm font-medium text-[#003942] mb-2">
                                                 Promo Code
                                             </label>
                                             <div className="flex gap-2">
@@ -193,29 +201,38 @@ export default function BasketPage() {
                                                     Apply
                                                 </Button>
                                             </div>
-                                            {promoApplied && <p className="text-xs text-green-600 mt-1">Promo code applied successfully!</p>}
-                                            <p className="text-xs text-[#003942]/50 mt-1">Try "FITCOACH10" for 10% off</p>
+                                            {promoApplied &&
+                                                <p className="text-xs text-green-600 mt-1">Promo code applied
+                                                    successfully!</p>}
+                                            <p className="text-xs text-[#003942]/50 mt-1">Try "FITCOACH10" for 10%
+                                                off</p>
                                         </div>
-
-                                        <Button className="w-full bg-[#003942] text-[#f4efe8] hover:bg-[#004e5a] mt-6" size="lg">
-                                            Proceed to Checkout
-                                            <ChevronRight className="ml-1 h-4 w-4" />
-                                        </Button>
+                                        <Link href={"/payment"}>
+                                            <Button
+                                                className="w-full bg-[#003942] text-[#f4efe8] hover:bg-[#004e5a] mt-6"
+                                                size="lg">
+                                                Proceed to Checkout
+                                                <ChevronRight className="ml-1 h-4 w-4"/>
+                                            </Button>
+                                        </Link>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     ) : (
-                        <div className="bg-white rounded-xl shadow-sm p-12 text-center max-w-2xl mx-auto border border-[#003942]/10">
-                            <div className="inline-flex items-center justify-center h-20 w-20 rounded-full bg-[#f4efe8] mb-6">
-                                <ShoppingBag className="h-10 w-10 text-[#003942]/40" />
+                        <div
+                            className="bg-white rounded-xl shadow-sm p-12 text-center max-w-2xl mx-auto border border-[#003942]/10">
+                            <div
+                                className="inline-flex items-center justify-center h-20 w-20 rounded-full bg-[#f4efe8] mb-6">
+                                <ShoppingBag className="h-10 w-10 text-[#003942]/40"/>
                             </div>
                             <h2 className="text-2xl font-bold mb-2 text-[#003942]">Your cart is empty</h2>
-                            <p className="text-[#003942]/70 mb-8">Looks like you haven't added any products to your cart yet.</p>
+                            <p className="text-[#003942]/70 mb-8">Looks like you haven't added any products to your cart
+                                yet.</p>
                             <Link href="/shop">
                                 <Button className="bg-[#003942] text-[#f4efe8] hover:bg-[#004e5a]" size="lg">
                                     Browse Products
-                                    <ChevronRight className="ml-1 h-4 w-4" />
+                                    <ChevronRight className="ml-1 h-4 w-4"/>
                                 </Button>
                             </Link>
                         </div>
