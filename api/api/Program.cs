@@ -77,11 +77,18 @@ if (!Directory.Exists(uploadsPath))
     Directory.CreateDirectory(uploadsPath);
 }
 
+
+app.UseStaticFiles(); // This serves wwwroot by default
+
+// Optional: If you want to explicitly map /uploads to a physical path:
 app.UseStaticFiles(new StaticFileOptions
 {
-    FileProvider = new PhysicalFileProvider(uploadsPath),
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads")),
     RequestPath = "/uploads"
 });
+
+app.UseRouting();
 
 
 app.UseSwagger();
