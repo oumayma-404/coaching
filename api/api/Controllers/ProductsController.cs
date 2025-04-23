@@ -15,14 +15,18 @@ public class ProductsController : ControllerBase
     private readonly ILogger<ProductsController> _logger;
     private readonly IWebHostEnvironment _hostEnvironment;
 
+    private readonly CloudinaryService _cloudinaryService;
+
     public ProductsController(
         IProductService productService,
         ILogger<ProductsController> logger,
-        IWebHostEnvironment hostEnvironment)
+        IWebHostEnvironment hostEnvironment,
+        CloudinaryService cloudinaryService)
     {
         _productService = productService;
         _logger = logger;
         _hostEnvironment = hostEnvironment;
+        _cloudinaryService = cloudinaryService;
     }
 
     [HttpGet]
@@ -99,16 +103,7 @@ public class ProductsController : ControllerBase
 
             if (productDto.Image != null)
             {
-                var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
-                Directory.CreateDirectory(uploadsFolder);
-
-                var fileName = $"{Guid.NewGuid()}{Path.GetExtension(productDto.Image.FileName)}";
-                var filePath = Path.Combine(uploadsFolder, fileName);
-
-                using var stream = new FileStream(filePath, FileMode.Create);
-                await productDto.Image.CopyToAsync(stream);
-
-                imageUrl = $"/uploads/{fileName}";
+                imageUrl = await _cloudinaryService.UploadImageAsync(productDto.Image);
             }
 
             var product = new Product

@@ -7,10 +7,7 @@ using api.Services;
 using DotNetEnv;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
 Env.Load();
@@ -21,6 +18,7 @@ var dbPort = Environment.GetEnvironmentVariable("DB_PORT");
 var dbUsername = Environment.GetEnvironmentVariable("DB_USERNAME");
 var dbPassword = Environment.GetEnvironmentVariable("DB_PASSWORD");
 var dbName = Environment.GetEnvironmentVariable("DB_DATABASE");
+
 
 
 var connectionString = $"Host={dbHost};Port={dbPort};Username={dbUsername};Password={dbPassword};Database={dbName}";
@@ -34,6 +32,8 @@ builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddSingleton<CloudinaryService>();
+
 //builder.Services.AddScoped<IPaymentService, StripePaymentService>();
 
 builder.Services.AddControllers();
@@ -72,21 +72,6 @@ using (var scope = app.Services.CreateScope())
     db.Database.Migrate();
 }
 
-app.UseStaticFiles(); // for wwwroot
-
-// If you're saving files to a custom folder like "uploads":
-var uploadsPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
-Directory.CreateDirectory(uploadsPath);
-
-app.UseStaticFiles(); // This serves wwwroot by default
-
-// Optional: If you want to explicitly map /uploads to a physical path:
-app.UseStaticFiles(new StaticFileOptions
-{
-    FileProvider = new PhysicalFileProvider(
-        Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads")),
-    RequestPath = "/uploads"
-});
 
 app.UseRouting();
 
