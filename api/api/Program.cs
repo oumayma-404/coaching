@@ -42,8 +42,22 @@ builder.Services.AddSwaggerGen(options =>
     options.SupportNonNullableReferenceTypes();
     options.OperationFilter<FileUploadOperationFilter>(); // 👈 Add this line
 });
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowLocalhost", policy =>
+    {
+        // Allow any localhost domain (any port on localhost)
+        policy.WithOrigins("http://localhost:3000", "http://localhost:3001", "http://localhost:3002", "http://localhost:3003") // Add more ports as needed
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
 
 var app = builder.Build();
+
+// Use CORS policy
+app.UseCors("AllowLocalhost");
+
 
 // Apply migrations automatically (for development)
 using (var scope = app.Services.CreateScope())
