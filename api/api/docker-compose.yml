@@ -11,7 +11,6 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./wwwroot/uploads:/app/wwwroot/uploads  # Mount local 'uploads' to container
 
   api:
     build: .
@@ -21,6 +20,9 @@ services:
       - db
     environment:
       - ConnectionStrings__PostgreSQLConnection=Host=db;Database=sportscoach;Username=postgres;Password=oumayma404!!!!
+    volumes:
+      - ./wwwroot/uploads:/app/wwwroot/uploads  # Mount local 'uploads' to container
+
 
 volumes:
   postgres_data:
