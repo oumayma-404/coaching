@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -66,7 +67,15 @@ using (var scope = app.Services.CreateScope())
     db.Database.Migrate();
 }
 
-app.UseStaticFiles(); // serve wwwroot by default
+app.UseStaticFiles(); // for wwwroot
+
+// If you're saving files to a custom folder like "uploads":
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(builder.Environment.ContentRootPath, "uploads")),
+    RequestPath = "/uploads"
+});
 
 
 app.UseSwagger();
