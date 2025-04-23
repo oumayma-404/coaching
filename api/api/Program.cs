@@ -45,19 +45,24 @@ builder.Services.AddSwaggerGen(options =>
 });
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowLocalhost", policy =>
+    options.AddPolicy("AllowFrontend", policy =>
     {
-        // Allow any localhost domain (any port on localhost)
-        policy.WithOrigins("http://localhost:3000", "http://localhost:3001", "http://localhost:3002", "http://localhost:3003") // Add more ports as needed
+        policy.WithOrigins(
+                "http://localhost:3000",
+                "http://localhost:3001",
+                "https://coaching-ieij4unlv-benkhalifaoumayma98-gmailcoms-projects.vercel.app"
+            )
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
 });
 
+
+
 var app = builder.Build();
 
 // Use CORS policy
-app.UseCors("AllowLocalhost");
+app.UseCors("AllowFrontend");
 
 
 // Apply migrations automatically (for development)
