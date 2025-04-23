@@ -42,9 +42,9 @@ export default function ShopSection() {
         supplements: [
             {
                 id: "s1",
-                name: "Premium Protein Powder",
+                name: "Micronised Creatine Powder – Optimum Nutrition – 317g",
                 price: 49.99,
-                image: "/placeholder.svg?height=300&width=300",
+                image: "/images/products/creatine.webp",
                 category: "Supplements",
             },
             {
