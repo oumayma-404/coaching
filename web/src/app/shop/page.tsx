@@ -2,225 +2,29 @@
 /* eslint-disable react/no-unescaped-entities */
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { ShoppingBag, Search, Filter, ChevronRight, ChevronDown, Star } from "lucide-react"
+import { ShoppingBag, Search, Filter, ChevronRight, ChevronDown, Star, Loader2 } from "lucide-react"
 import CenteredContainer from "@/layout/centered-container"
 import { useCart } from "@/context/cart-context"
 import { useToast } from "@/components/ui/use-toast"
-// Product type definition
-type Product = {
-    id: string;
-    name: string;
-    price: number;
-    image: string;
-    category: string;
-    rating: number;
-    reviews: number;
-    bestseller: boolean;
-};
 
-// Type for products grouped by category
-type ProductsByCategory = {
-    supplements: Product[];
-    equipment: Product[];
-    apparel: Product[];
-};
-
-// Product data
-const products: ProductsByCategory = {
-    supplements: [
-        {
-            id: "s1",
-            name: "Premium Protein Powder",
-            price: 49.99,
-            image: "/placeholder.svg?height=300&width=300",
-            category: "Supplements",
-            rating: 4.8,
-            reviews: 124,
-            bestseller: true,
-        },
-        {
-            id: "s2",
-            name: "Pre-Workout Formula",
-            price: 39.99,
-            image: "/placeholder.svg?height=300&width=300",
-            category: "Supplements",
-            rating: 4.6,
-            reviews: 98,
-            bestseller: false,
-        },
-        {
-            id: "s3",
-            name: "BCAA Recovery Drink",
-            price: 36.99,
-            image: "/placeholder.svg?height=300&width=300",
-            category: "Supplements",
-            rating: 4.5,
-            reviews: 76,
-            bestseller: false,
-        },
-        {
-            id: "s4",
-            name: "Multivitamin Complex",
-            price: 29.99,
-            image: "/placeholder.svg?height=300&width=300",
-            category: "Supplements",
-            rating: 4.7,
-            reviews: 112,
-            bestseller: false,
-        },
-        {
-            id: "s5",
-            name: "Creatine Monohydrate",
-            price: 34.99,
-            image: "/placeholder.svg?height=300&width=300",
-            category: "Supplements",
-            rating: 4.9,
-            reviews: 156,
-            bestseller: true,
-        },
-        {
-            id: "s6",
-            name: "Omega-3 Fish Oil",
-            price: 24.99,
-            image: "/placeholder.svg?height=300&width=300",
-            category: "Supplements",
-            rating: 4.4,
-            reviews: 87,
-            bestseller: false,
-        },
-    ],
-    equipment: [
-        {
-            id: "e1",
-            name: "Resistance Bands Set",
-            price: 29.99,
-            image: "/placeholder.svg?height=300&width=300",
-            category: "Equipment",
-            rating: 4.7,
-            reviews: 143,
-            bestseller: true,
-        },
-        {
-            id: "e2",
-            name: "Adjustable Dumbbell Set",
-            price: 199.99,
-            image: "/placeholder.svg?height=300&width=300",
-            category: "Equipment",
-            rating: 4.9,
-            reviews: 78,
-            bestseller: false,
-        },
-        {
-            id: "e3",
-            name: "Fitness Tracker Watch",
-            price: 129.99,
-            image: "/placeholder.svg?height=300&width=300",
-            category: "Equipment",
-            rating: 4.6,
-            reviews: 92,
-            bestseller: false,
-        },
-        {
-            id: "e4",
-            name: "Yoga Mat Premium",
-            price: 49.99,
-            image: "/placeholder.svg?height=300&width=300",
-            category: "Equipment",
-            rating: 4.8,
-            reviews: 105,
-            bestseller: false,
-        },
-        {
-            id: "e5",
-            name: "Kettlebell Set",
-            price: 149.99,
-            image: "/placeholder.svg?height=300&width=300",
-            category: "Equipment",
-            rating: 4.7,
-            reviews: 67,
-            bestseller: true,
-        },
-        {
-            id: "e6",
-            name: "Foam Roller",
-            price: 34.99,
-            image: "/placeholder.svg?height=300&width=300",
-            category: "Equipment",
-            rating: 4.5,
-            reviews: 89,
-            bestseller: false,
-        },
-    ],
-    apparel: [
-        {
-            id: "a1",
-            name: "Performance T-Shirt",
-            price: 34.99,
-            image: "/placeholder.svg?height=300&width=300",
-            category: "Apparel",
-            rating: 4.6,
-            reviews: 118,
-            bestseller: true,
-        },
-        {
-            id: "a2",
-            name: "Compression Leggings",
-            price: 59.99,
-            image: "/placeholder.svg?height=300&width=300",
-            category: "Apparel",
-            rating: 4.8,
-            reviews: 132,
-            bestseller: false,
-        },
-        {
-            id: "a3",
-            name: "Training Shorts",
-            price: 39.99,
-            image: "/placeholder.svg?height=300&width=300",
-            category: "Apparel",
-            rating: 4.7,
-            reviews: 94,
-            bestseller: false,
-        },
-        {
-            id: "a4",
-            name: "Workout Hoodie",
-            price: 64.99,
-            image: "/placeholder.svg?height=300&width=300",
-            category: "Apparel",
-            rating: 4.9,
-            reviews: 76,
-            bestseller: false,
-        },
-        {
-            id: "a5",
-            name: "Athletic Socks (3-Pack)",
-            price: 19.99,
-            image: "/placeholder.svg?height=300&width=300",
-            category: "Apparel",
-            rating: 4.5,
-            reviews: 108,
-            bestseller: true,
-        },
-        {
-            id: "a6",
-            name: "Workout Gloves",
-            price: 24.99,
-            image: "/placeholder.svg?height=300&width=300",
-            category: "Apparel",
-            rating: 4.4,
-            reviews: 82,
-            bestseller: false,
-        },
-    ],
+// Define the Product type based on the API response
+interface Product {
+    id: number
+    name: string
+    description: string
+    price: number
+    imageUrl: string
+    category: string
+    rating: number
+    reviews: number
+    isBestSeller: boolean
+    createdAt: string
+    updatedAt: string | null
 }
-
-// Combine all products for the "all" tab
-const allProducts: Product[] = [...products.supplements, ...products.equipment, ...products.apparel]
 
 export default function ShopPage() {
     const [activeCategory, setActiveCategory] = useState<string>("all")
@@ -228,16 +32,53 @@ export default function ShopPage() {
     const [sortBy, setSortBy] = useState<string>("featured")
     const [showFilters, setShowFilters] = useState<boolean>(false)
     const [priceRange, setPriceRange] = useState<{ min: number; max: number }>({ min: 0, max: 200 })
+    const [products, setProducts] = useState<Product[]>([])
+    const [isLoading, setIsLoading] = useState<boolean>(true)
+    const [error, setError] = useState<string | null>(null)
     const { addItem } = useCart()
     const { toast } = useToast()
+
+    // Fetch products from API
+    useEffect(() => {
+        const fetchProducts = async () => {
+            setIsLoading(true)
+            setError(null)
+
+            try {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/Products?sort=featured&page=1&pageSize=50`)
+
+                if (!response.ok) {
+                    throw new Error(`Error fetching products: ${response.status}`)
+                }
+
+                const data = await response.json()
+                setProducts(data)
+            } catch (err) {
+                console.error("Failed to fetch products:", err)
+                setError("Failed to load products. Please try again later.")
+            } finally {
+                setIsLoading(false)
+            }
+        }
+
+        fetchProducts()
+    }, [])
+
+    // Get products by category
+    const getProductsByCategory = (category: string): Product[] => {
+        if (category === "all") {
+            return products
+        }
+        return products.filter((product) => product.category.toLowerCase() === category.toLowerCase())
+    }
 
     // Filter products based on search query and price range
     const filterProducts = (productList: Product[]): Product[] => {
         return productList.filter(
             (product) =>
                 product.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
-                product.price >= priceRange.min &&
-                product.price <= priceRange.max,
+                product.price / 100 >= priceRange.min &&
+                product.price / 100 <= priceRange.max,
         )
     }
 
@@ -252,30 +93,40 @@ export default function ShopPage() {
                 return [...productList].sort((a, b) => b.rating - a.rating)
             case "featured":
             default:
-                return [...productList].sort((a, b) => (a.bestseller === b.bestseller ? 0 : a.bestseller ? -1 : 1))
+                return [...productList].sort((a, b) => (a.isBestSeller === b.isBestSeller ? 0 : a.isBestSeller ? -1 : 1))
         }
     }
 
     // Get the current products based on active category, search, and filters
     const getCurrentProducts = (): Product[] => {
-        let currentProducts: Product[] = []
+        const categoryProducts = getProductsByCategory(activeCategory)
+        return sortProducts(filterProducts(categoryProducts))
+    }
 
-        if (activeCategory === "all") {
-            currentProducts = allProducts
-        } else {
-            currentProducts = products[activeCategory as keyof ProductsByCategory]
+    // Get unique categories from products
+    const getUniqueCategories = (): string[] => {
+        if (products.length === 0) return []
+        return [...new Set(products.map((product) => product.category.toLowerCase()))]
+    }
+
+    // Get the base URL for images
+    const getImageUrl = (path: string): string => {
+        // If the path is already a full URL, return it as is
+        if (path.startsWith("http")) {
+            return path
         }
 
-        return sortProducts(filterProducts(currentProducts))
+        // Otherwise, prepend the API base URL
+        return `${process.env.NEXT_PUBLIC_API_URL}${path}`
     }
 
     // Handle adding item to cart
     const handleAddToCart = (product: Product) => {
         addItem({
-            id: product.id,
+            id: product.id.toString(),
             name: product.name,
-            price: product.price,
-            image: product.image,
+            price: product.price / 100, // Convert cents to dollars
+            image: getImageUrl(product.imageUrl),
             category: product.category,
         })
 
@@ -286,6 +137,66 @@ export default function ShopPage() {
         })
     }
 
+    // Render loading state
+    if (isLoading) {
+        return (
+            <div className="min-h-screen bg-white">
+                <section className="w-full py-12 md:py-16 bg-gradient-to-r from-[#f4efe8] to-[#e9e2d8]">
+                    <CenteredContainer>
+                        <div className="flex flex-col items-center text-center space-y-4 max-w-3xl mx-auto">
+                            <div className="inline-flex items-center rounded-full bg-[#003942]/10 px-2.5 py-0.5 text-sm font-semibold text-[#003942]">
+                                <ShoppingBag className="mr-1 h-4 w-4" />
+                                Shop
+                            </div>
+                            <h1 className="text-4xl md:text-5xl font-bold tracking-tighter text-[#003942]">
+                                Training <span className="text-[#003942]">Essentials</span>
+                            </h1>
+                            <p className="text-xl text-[#003942]/70 max-w-[700px]">
+                                Quality products hand-picked by our coaches to help you reach your fitness goals faster.
+                            </p>
+                        </div>
+                    </CenteredContainer>
+                </section>
+                <div className="flex justify-center items-center py-32">
+                    <Loader2 className="h-10 w-10 text-[#003942] animate-spin" />
+                    <span className="ml-2 text-[#003942]">Loading products...</span>
+                </div>
+            </div>
+        )
+    }
+
+    // Render error state
+    if (error) {
+        return (
+            <div className="min-h-screen bg-white">
+                <section className="w-full py-12 md:py-16 bg-gradient-to-r from-[#f4efe8] to-[#e9e2d8]">
+                    <CenteredContainer>
+                        <div className="flex flex-col items-center text-center space-y-4 max-w-3xl mx-auto">
+                            <div className="inline-flex items-center rounded-full bg-[#003942]/10 px-2.5 py-0.5 text-sm font-semibold text-[#003942]">
+                                <ShoppingBag className="mr-1 h-4 w-4" />
+                                Shop
+                            </div>
+                            <h1 className="text-4xl md:text-5xl font-bold tracking-tighter text-[#003942]">
+                                Training <span className="text-[#003942]">Essentials</span>
+                            </h1>
+                            <p className="text-xl text-[#003942]/70 max-w-[700px]">
+                                Quality products hand-picked by our coaches to help you reach your fitness goals faster.
+                            </p>
+                        </div>
+                    </CenteredContainer>
+                </section>
+                <div className="flex flex-col items-center justify-center py-32">
+                    <p className="text-red-500 mb-4">{error}</p>
+                    <Button onClick={() => window.location.reload()} className="bg-[#003942] text-[#f4efe8] hover:bg-[#004e5a]">
+                        Try Again
+                    </Button>
+                </div>
+            </div>
+        )
+    }
+
+    // Get unique categories
+    const categories = ["all", ...getUniqueCategories()]
 
     return (
         <div className="min-h-screen bg-white">
@@ -311,71 +222,36 @@ export default function ShopPage() {
             <section className="py-12 bg-white">
                 <CenteredContainer>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div
-                            className="relative overflow-hidden rounded-xl shadow-md transition-transform hover:scale-105 cursor-pointer"
-                            onClick={() => setActiveCategory("supplements")}
-                        >
-                            <Image
-                                src="/placeholder.svg?height=300&width=600"
-                                alt="Supplements"
-                                width={600}
-                                height={300}
-                                className="w-full h-48 object-cover"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-[#003942]/70 to-transparent flex items-end">
-                                <div className="p-6 text-white">
-                                    <h3 className="text-xl font-bold">Supplements</h3>
-                                    <p className="text-sm opacity-90">Fuel your workouts and recovery</p>
-                                    <div className="mt-2 inline-flex items-center text-[#f4efe8] text-sm">
-                                        Shop Now <ChevronRight className="ml-1 h-4 w-4" />
+                        {categories.slice(1, 4).map((category, index) => (
+                            <div
+                                key={category}
+                                className="relative overflow-hidden rounded-xl shadow-md transition-transform hover:scale-105 cursor-pointer"
+                                onClick={() => setActiveCategory(category)}
+                            >
+                                <Image
+                                    src="/placeholder.svg?height=300&width=600"
+                                    alt={category}
+                                    width={600}
+                                    height={300}
+                                    className="w-full h-48 object-cover"
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-[#003942]/70 to-transparent flex items-end">
+                                    <div className="p-6 text-white">
+                                        <h3 className="text-xl font-bold">{category.charAt(0).toUpperCase() + category.slice(1)}</h3>
+                                        <p className="text-sm opacity-90">
+                                            {index === 0
+                                                ? "Fuel your workouts and recovery"
+                                                : index === 1
+                                                    ? "Tools for effective training"
+                                                    : "Perform in comfort and style"}
+                                        </p>
+                                        <div className="mt-2 inline-flex items-center text-[#f4efe8] text-sm">
+                                            Shop Now <ChevronRight className="ml-1 h-4 w-4" />
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-
-                        <div
-                            className="relative overflow-hidden rounded-xl shadow-md transition-transform hover:scale-105 cursor-pointer"
-                            onClick={() => setActiveCategory("equipment")}
-                        >
-                            <Image
-                                src="/placeholder.svg?height=300&width=600"
-                                alt="Equipment"
-                                width={600}
-                                height={300}
-                                className="w-full h-48 object-cover"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-[#003942]/70 to-transparent flex items-end">
-                                <div className="p-6 text-white">
-                                    <h3 className="text-xl font-bold">Equipment</h3>
-                                    <p className="text-sm opacity-90">Tools for effective training</p>
-                                    <div className="mt-2 inline-flex items-center text-[#f4efe8] text-sm">
-                                        Shop Now <ChevronRight className="ml-1 h-4 w-4" />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div
-                            className="relative overflow-hidden rounded-xl shadow-md transition-transform hover:scale-105 cursor-pointer"
-                            onClick={() => setActiveCategory("apparel")}
-                        >
-                            <Image
-                                src="/placeholder.svg?height=300&width=600"
-                                alt="Apparel"
-                                width={600}
-                                height={300}
-                                className="w-full h-48 object-cover"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-[#003942]/70 to-transparent flex items-end">
-                                <div className="p-6 text-white">
-                                    <h3 className="text-xl font-bold">Apparel</h3>
-                                    <p className="text-sm opacity-90">Perform in comfort and style</p>
-                                    <div className="mt-2 inline-flex items-center text-[#f4efe8] text-sm">
-                                        Shop Now <ChevronRight className="ml-1 h-4 w-4" />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        ))}
                     </div>
                 </CenteredContainer>
             </section>
@@ -425,58 +301,23 @@ export default function ShopPage() {
                                         <div>
                                             <h3 className="font-medium mb-2 text-[#003942]">Categories</h3>
                                             <div className="space-y-2">
-                                                <div className="flex items-center">
-                                                    <input
-                                                        type="radio"
-                                                        id="mobile-all"
-                                                        name="mobile-category"
-                                                        checked={activeCategory === "all"}
-                                                        onChange={() => setActiveCategory("all")}
-                                                        className="mr-2"
-                                                    />
-                                                    <label htmlFor="mobile-all" className="text-[#003942]/70">
-                                                        All Products
-                                                    </label>
-                                                </div>
-                                                <div className="flex items-center">
-                                                    <input
-                                                        type="radio"
-                                                        id="mobile-supplements"
-                                                        name="mobile-category"
-                                                        checked={activeCategory === "supplements"}
-                                                        onChange={() => setActiveCategory("supplements")}
-                                                        className="mr-2"
-                                                    />
-                                                    <label htmlFor="mobile-supplements" className="text-[#003942]/70">
-                                                        Supplements
-                                                    </label>
-                                                </div>
-                                                <div className="flex items-center">
-                                                    <input
-                                                        type="radio"
-                                                        id="mobile-equipment"
-                                                        name="mobile-category"
-                                                        checked={activeCategory === "equipment"}
-                                                        onChange={() => setActiveCategory("equipment")}
-                                                        className="mr-2"
-                                                    />
-                                                    <label htmlFor="mobile-equipment" className="text-[#003942]/70">
-                                                        Equipment
-                                                    </label>
-                                                </div>
-                                                <div className="flex items-center">
-                                                    <input
-                                                        type="radio"
-                                                        id="mobile-apparel"
-                                                        name="mobile-category"
-                                                        checked={activeCategory === "apparel"}
-                                                        onChange={() => setActiveCategory("apparel")}
-                                                        className="mr-2"
-                                                    />
-                                                    <label htmlFor="mobile-apparel" className="text-[#003942]/70">
-                                                        Apparel
-                                                    </label>
-                                                </div>
+                                                {categories.map((category) => (
+                                                    <div key={`mobile-${category}`} className="flex items-center">
+                                                        <input
+                                                            type="radio"
+                                                            id={`mobile-${category}`}
+                                                            name="mobile-category"
+                                                            checked={activeCategory === category}
+                                                            onChange={() => setActiveCategory(category)}
+                                                            className="mr-2"
+                                                        />
+                                                        <label htmlFor={`mobile-${category}`} className="text-[#003942]/70">
+                                                            {category === "all"
+                                                                ? "All Products"
+                                                                : category.charAt(0).toUpperCase() + category.slice(1)}
+                                                        </label>
+                                                    </div>
+                                                ))}
                                             </div>
                                         </div>
                                     </div>
@@ -490,30 +331,19 @@ export default function ShopPage() {
                                 <div className="p-4 bg-white rounded-lg border border-[#003942]/20">
                                     <h3 className="font-medium text-lg mb-4 text-[#003942]">Categories</h3>
                                     <div className="space-y-2">
-                                        <div
-                                            className={`px-3 py-2 rounded-md cursor-pointer ${activeCategory === "all" ? "bg-[#003942]/10 text-[#003942] font-medium" : "hover:bg-[#003942]/5 text-[#003942]/70"}`}
-                                            onClick={() => setActiveCategory("all")}
-                                        >
-                                            All Products
-                                        </div>
-                                        <div
-                                            className={`px-3 py-2 rounded-md cursor-pointer ${activeCategory === "supplements" ? "bg-[#003942]/10 text-[#003942] font-medium" : "hover:bg-[#003942]/5 text-[#003942]/70"}`}
-                                            onClick={() => setActiveCategory("supplements")}
-                                        >
-                                            Supplements
-                                        </div>
-                                        <div
-                                            className={`px-3 py-2 rounded-md cursor-pointer ${activeCategory === "equipment" ? "bg-[#003942]/10 text-[#003942] font-medium" : "hover:bg-[#003942]/5 text-[#003942]/70"}`}
-                                            onClick={() => setActiveCategory("equipment")}
-                                        >
-                                            Equipment
-                                        </div>
-                                        <div
-                                            className={`px-3 py-2 rounded-md cursor-pointer ${activeCategory === "apparel" ? "bg-[#003942]/10 text-[#003942] font-medium" : "hover:bg-[#003942]/5 text-[#003942]/70"}`}
-                                            onClick={() => setActiveCategory("apparel")}
-                                        >
-                                            Apparel
-                                        </div>
+                                        {categories.map((category) => (
+                                            <div
+                                                key={`desktop-${category}`}
+                                                className={`px-3 py-2 rounded-md cursor-pointer ${
+                                                    activeCategory === category
+                                                        ? "bg-[#003942]/10 text-[#003942] font-medium"
+                                                        : "hover:bg-[#003942]/5 text-[#003942]/70"
+                                                }`}
+                                                onClick={() => setActiveCategory(category)}
+                                            >
+                                                {category === "all" ? "All Products" : category.charAt(0).toUpperCase() + category.slice(1)}
+                                            </div>
+                                        ))}
                                     </div>
                                 </div>
 
@@ -580,17 +410,21 @@ export default function ShopPage() {
                                 {getCurrentProducts().map((product) => (
                                     <div
                                         key={product.id}
-                                        className="bg-white rounded-lg border border-[#003942]/10 overflow-hidden transition-all hover:shadow-md"
+                                        className="group bg-white rounded-lg border border-[#003942]/10 overflow-hidden transition-all hover:shadow-md"
                                     >
-                                        <div className="relative">
+                                        <div className="relative aspect-square overflow-hidden group">
                                             <Image
-                                                src={product.image || "/placeholder.svg"}
+                                                src={getImageUrl(product.imageUrl) || "/placeholder.svg"}
                                                 alt={product.name}
                                                 width={300}
                                                 height={300}
-                                                className="w-full h-64 object-cover"
+                                                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                                onError={(e) => {
+                                                    // Fallback to placeholder if image fails to load
+                                                    e.currentTarget.src = "/placeholder.svg?height=300&width=300"
+                                                }}
                                             />
-                                            {product.bestseller && (
+                                            {product.isBestSeller && (
                                                 <div className="absolute top-2 left-2 bg-[#003942] text-white text-xs font-bold px-2 py-1 rounded">
                                                     BESTSELLER
                                                 </div>
@@ -604,16 +438,16 @@ export default function ShopPage() {
                                                     {[...Array(5)].map((_, i) => (
                                                         <Star
                                                             key={i}
-                                                            className={`h-4 w-4 ${i < Math.floor(product.rating) ? "fill-current" : "fill-none"}`}
+                                                            className={`h-4 w-4 ${i < Math.floor(product.rating || 0) ? "fill-current" : "fill-none"}`}
                                                         />
                                                     ))}
                                                 </div>
                                                 <span className="text-sm text-[#003942]/50">
-                          {product.rating} ({product.reviews})
+                          {product.rating || 0} ({product.reviews || 0})
                         </span>
                                             </div>
                                             <div className="flex items-center justify-between">
-                                                <span className="font-bold text-lg text-[#003942]">${product.price.toFixed(2)}</span>
+                                                <span className="font-bold text-lg text-[#003942]">${(product.price / 100).toFixed(2)}</span>
                                                 <Button
                                                     size="sm"
                                                     className="bg-[#003942] text-[#f4efe8] hover:bg-[#004e5a]"
@@ -641,5 +475,4 @@ export default function ShopPage() {
             </section>
         </div>
     )
-
 }
