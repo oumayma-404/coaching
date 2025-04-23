@@ -2,15 +2,40 @@
 /* eslint-disable react/no-unescaped-entities */
 "use client"
 
-import { useState } from "react"
+import type React from "react"
+
+import { useState, useRef, useEffect } from "react"
 import Link from "next/link"
-import { ShoppingBag, ArrowRight } from "lucide-react"
+import { ShoppingBag, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import ProductCard from "@/components/ui/product-card"
 
 export default function ShopSection() {
     const [activeTab, setActiveTab] = useState("all")
+    const [currentSlide, setCurrentSlide] = useState(0)
+    const [touchStart, setTouchStart] = useState(0)
+    const [touchEnd, setTouchEnd] = useState(0)
+    const [isMobile, setIsMobile] = useState(false)
+    const sliderRefs = {
+        all: useRef<HTMLDivElement>(null),
+        supplements: useRef<HTMLDivElement>(null),
+        equipment: useRef<HTMLDivElement>(null),
+        apparel: useRef<HTMLDivElement>(null),
+    }
+
+    // Check if we're on mobile
+    useEffect(() => {
+        const checkMobile = () => {
+            setIsMobile(window.innerWidth < 640)
+            // Reset current slide when resizing
+            setCurrentSlide(0)
+        }
+
+        checkMobile()
+        window.addEventListener("resize", checkMobile)
+        return () => window.removeEventListener("resize", checkMobile)
+    }, [])
 
     // Product data that could be fetched from an API
     const products = {
@@ -115,8 +140,55 @@ export default function ShopSection() {
         ...products.equipment.slice(2, 3),
     ]
 
+    // Get current products based on active tab
+    const getCurrentProducts = () => {
+        switch (activeTab) {
+            case "supplements":
+                return products.supplements
+            case "equipment":
+                return products.equipment
+            case "apparel":
+                return products.apparel
+            default:
+                return allProducts
+        }
+    }
+
     const handleTabChange = (value: string) => {
         setActiveTab(value)
+        setCurrentSlide(0) // Reset to first slide when changing tabs
+    }
+
+    // Handle slider navigation
+    const nextSlide = () => {
+        const currentProducts = getCurrentProducts()
+        setCurrentSlide((prev) => (prev === currentProducts.length - 1 ? 0 : prev + 1))
+    }
+
+    const prevSlide = () => {
+        const currentProducts = getCurrentProducts()
+        setCurrentSlide((prev) => (prev === 0 ? currentProducts.length - 1 : prev - 1))
+    }
+
+    // Touch handlers for swipe gestures
+    const handleTouchStart = (e: React.TouchEvent) => {
+        setTouchStart(e.targetTouches[0].clientX)
+    }
+
+    const handleTouchMove = (e: React.TouchEvent) => {
+        setTouchEnd(e.targetTouches[0].clientX)
+    }
+
+    const handleTouchEnd = () => {
+        if (touchStart - touchEnd > 75) {
+            // Swipe left
+            nextSlide()
+        }
+
+        if (touchEnd - touchStart > 75) {
+            // Swipe right
+            prevSlide()
+        }
     }
 
     return (
@@ -179,11 +251,71 @@ export default function ShopSection() {
                             </TabsTrigger>
                         </TabsList>
                     </div>
-                    <TabsContent value="all" className="mt-6">
-                        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+
+                    {/* All Products Tab */}
+                    <TabsContent value="all" className="mt-6 relative">
+                        {/* Mobile Slider */}
+                        <div className="sm:hidden relative">
+                            <div
+                                className="overflow-hidden"
+                                onTouchStart={handleTouchStart}
+                                onTouchMove={handleTouchMove}
+                                onTouchEnd={handleTouchEnd}
+                            >
+                                <div
+                                    className="flex transition-transform duration-300 ease-in-out"
+                                    style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+                                >
+                                    {allProducts.map((product, index) => (
+                                        <div key={`all-mobile-${index}`} className="w-full flex-shrink-0 px-4">
+                                            <ProductCard
+                                                id={product.id}
+                                                name={product.name}
+                                                price={product.price}
+                                                image={product.image}
+                                                category={product.category}
+                                            />
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Navigation Arrows */}
+                            <button
+                                onClick={prevSlide}
+                                className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 bg-white rounded-full p-2 shadow-md z-10"
+                                aria-label="Previous product"
+                            >
+                                <ChevronLeft className="h-6 w-6 text-[#003942]" />
+                            </button>
+                            <button
+                                onClick={nextSlide}
+                                className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 bg-white rounded-full p-2 shadow-md z-10"
+                                aria-label="Next product"
+                            >
+                                <ChevronRight className="h-6 w-6 text-[#003942]" />
+                            </button>
+
+                            {/* Pagination Dots */}
+                            <div className="flex justify-center mt-4 space-x-2">
+                                {allProducts.map((_, index) => (
+                                    <button
+                                        key={`dot-all-${index}`}
+                                        className={`h-2 rounded-full transition-all ${
+                                            currentSlide === index ? "w-6 bg-[#003942]" : "w-2 bg-[#003942]/30"
+                                        }`}
+                                        onClick={() => setCurrentSlide(index)}
+                                        aria-label={`Go to slide ${index + 1}`}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Desktop Grid */}
+                        <div className="hidden sm:grid grid-cols-2 lg:grid-cols-4 gap-6">
                             {allProducts.map((product, index) => (
                                 <ProductCard
-                                    key={`all-${index}`}
+                                    key={`all-desktop-${index}`}
                                     id={product.id}
                                     name={product.name}
                                     price={product.price}
@@ -193,11 +325,71 @@ export default function ShopSection() {
                             ))}
                         </div>
                     </TabsContent>
-                    <TabsContent value="supplements" className="mt-6">
-                        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+
+                    {/* Supplements Tab */}
+                    <TabsContent value="supplements" className="mt-6 relative">
+                        {/* Mobile Slider */}
+                        <div className="sm:hidden relative">
+                            <div
+                                className="overflow-hidden"
+                                onTouchStart={handleTouchStart}
+                                onTouchMove={handleTouchMove}
+                                onTouchEnd={handleTouchEnd}
+                            >
+                                <div
+                                    className="flex transition-transform duration-300 ease-in-out"
+                                    style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+                                >
+                                    {products.supplements.map((product, index) => (
+                                        <div key={`supplements-mobile-${index}`} className="w-full flex-shrink-0 px-4">
+                                            <ProductCard
+                                                id={product.id}
+                                                name={product.name}
+                                                price={product.price}
+                                                image={product.image}
+                                                category={product.category}
+                                            />
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Navigation Arrows */}
+                            <button
+                                onClick={prevSlide}
+                                className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 bg-white rounded-full p-2 shadow-md z-10"
+                                aria-label="Previous product"
+                            >
+                                <ChevronLeft className="h-6 w-6 text-[#003942]" />
+                            </button>
+                            <button
+                                onClick={nextSlide}
+                                className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 bg-white rounded-full p-2 shadow-md z-10"
+                                aria-label="Next product"
+                            >
+                                <ChevronRight className="h-6 w-6 text-[#003942]" />
+                            </button>
+
+                            {/* Pagination Dots */}
+                            <div className="flex justify-center mt-4 space-x-2">
+                                {products.supplements.map((_, index) => (
+                                    <button
+                                        key={`dot-supplements-${index}`}
+                                        className={`h-2 rounded-full transition-all ${
+                                            currentSlide === index ? "w-6 bg-[#003942]" : "w-2 bg-[#003942]/30"
+                                        }`}
+                                        onClick={() => setCurrentSlide(index)}
+                                        aria-label={`Go to slide ${index + 1}`}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Desktop Grid */}
+                        <div className="hidden sm:grid grid-cols-2 lg:grid-cols-4 gap-6">
                             {products.supplements.map((product, index) => (
                                 <ProductCard
-                                    key={`supplement-${index}`}
+                                    key={`supplements-desktop-${index}`}
                                     id={product.id}
                                     name={product.name}
                                     price={product.price}
@@ -207,11 +399,71 @@ export default function ShopSection() {
                             ))}
                         </div>
                     </TabsContent>
-                    <TabsContent value="equipment" className="mt-6">
-                        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+
+                    {/* Equipment Tab */}
+                    <TabsContent value="equipment" className="mt-6 relative">
+                        {/* Mobile Slider */}
+                        <div className="sm:hidden relative">
+                            <div
+                                className="overflow-hidden"
+                                onTouchStart={handleTouchStart}
+                                onTouchMove={handleTouchMove}
+                                onTouchEnd={handleTouchEnd}
+                            >
+                                <div
+                                    className="flex transition-transform duration-300 ease-in-out"
+                                    style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+                                >
+                                    {products.equipment.map((product, index) => (
+                                        <div key={`equipment-mobile-${index}`} className="w-full flex-shrink-0 px-4">
+                                            <ProductCard
+                                                id={product.id}
+                                                name={product.name}
+                                                price={product.price}
+                                                image={product.image}
+                                                category={product.category}
+                                            />
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Navigation Arrows */}
+                            <button
+                                onClick={prevSlide}
+                                className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 bg-white rounded-full p-2 shadow-md z-10"
+                                aria-label="Previous product"
+                            >
+                                <ChevronLeft className="h-6 w-6 text-[#003942]" />
+                            </button>
+                            <button
+                                onClick={nextSlide}
+                                className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 bg-white rounded-full p-2 shadow-md z-10"
+                                aria-label="Next product"
+                            >
+                                <ChevronRight className="h-6 w-6 text-[#003942]" />
+                            </button>
+
+                            {/* Pagination Dots */}
+                            <div className="flex justify-center mt-4 space-x-2">
+                                {products.equipment.map((_, index) => (
+                                    <button
+                                        key={`dot-equipment-${index}`}
+                                        className={`h-2 rounded-full transition-all ${
+                                            currentSlide === index ? "w-6 bg-[#003942]" : "w-2 bg-[#003942]/30"
+                                        }`}
+                                        onClick={() => setCurrentSlide(index)}
+                                        aria-label={`Go to slide ${index + 1}`}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Desktop Grid */}
+                        <div className="hidden sm:grid grid-cols-2 lg:grid-cols-4 gap-6">
                             {products.equipment.map((product, index) => (
                                 <ProductCard
-                                    key={`equipment-${index}`}
+                                    key={`equipment-desktop-${index}`}
                                     id={product.id}
                                     name={product.name}
                                     price={product.price}
@@ -221,11 +473,71 @@ export default function ShopSection() {
                             ))}
                         </div>
                     </TabsContent>
-                    <TabsContent value="apparel" className="mt-6">
-                        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+
+                    {/* Apparel Tab */}
+                    <TabsContent value="apparel" className="mt-6 relative">
+                        {/* Mobile Slider */}
+                        <div className="sm:hidden relative">
+                            <div
+                                className="overflow-hidden"
+                                onTouchStart={handleTouchStart}
+                                onTouchMove={handleTouchMove}
+                                onTouchEnd={handleTouchEnd}
+                            >
+                                <div
+                                    className="flex transition-transform duration-300 ease-in-out"
+                                    style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+                                >
+                                    {products.apparel.map((product, index) => (
+                                        <div key={`apparel-mobile-${index}`} className="w-full flex-shrink-0 px-4">
+                                            <ProductCard
+                                                id={product.id}
+                                                name={product.name}
+                                                price={product.price}
+                                                image={product.image}
+                                                category={product.category}
+                                            />
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Navigation Arrows */}
+                            <button
+                                onClick={prevSlide}
+                                className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 bg-white rounded-full p-2 shadow-md z-10"
+                                aria-label="Previous product"
+                            >
+                                <ChevronLeft className="h-6 w-6 text-[#003942]" />
+                            </button>
+                            <button
+                                onClick={nextSlide}
+                                className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 bg-white rounded-full p-2 shadow-md z-10"
+                                aria-label="Next product"
+                            >
+                                <ChevronRight className="h-6 w-6 text-[#003942]" />
+                            </button>
+
+                            {/* Pagination Dots */}
+                            <div className="flex justify-center mt-4 space-x-2">
+                                {products.apparel.map((_, index) => (
+                                    <button
+                                        key={`dot-apparel-${index}`}
+                                        className={`h-2 rounded-full transition-all ${
+                                            currentSlide === index ? "w-6 bg-[#003942]" : "w-2 bg-[#003942]/30"
+                                        }`}
+                                        onClick={() => setCurrentSlide(index)}
+                                        aria-label={`Go to slide ${index + 1}`}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Desktop Grid */}
+                        <div className="hidden sm:grid grid-cols-2 lg:grid-cols-4 gap-6">
                             {products.apparel.map((product, index) => (
                                 <ProductCard
-                                    key={`apparel-${index}`}
+                                    key={`apparel-desktop-${index}`}
                                     id={product.id}
                                     name={product.name}
                                     price={product.price}
@@ -236,6 +548,7 @@ export default function ShopSection() {
                         </div>
                     </TabsContent>
                 </Tabs>
+
                 <div className="mt-12 flex justify-center">
                     <Link href="/shop">
                         <Button variant="outline" size="lg" className="border-[#003942] text-[#003942] hover:bg-[#003942]/10 group">

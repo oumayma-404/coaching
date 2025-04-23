@@ -11,11 +11,11 @@ export default function Home() {
     return (
         <div className="flex min-h-screen flex-col">
             <main className="flex-1">
-                <HeroSection />
-                <ResultsSection />
-                <CoachingSection />
-                <ShopSection />
-                <CtaSection />
+                <HeroSection/>
+                <ShopSection/>
+                <CoachingSection/>
+                <ResultsSection/>
+                <CtaSection/>
             </main>
         </div>
     )
