@@ -1,5 +1,6 @@
 ﻿// Program.cs
 
+using api;
 using api.Infrastructure;
 using api.Repositories;
 using api.Services;
@@ -36,7 +37,11 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SupportNonNullableReferenceTypes();
+    options.OperationFilter<FileUploadOperationFilter>(); // 👈 Add this line
+});
 
 var app = builder.Build();
 
@@ -46,6 +51,8 @@ using (var scope = app.Services.CreateScope())
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     db.Database.Migrate();
 }
+
+app.UseStaticFiles(); // serve wwwroot by default
 
 
 app.UseSwagger();

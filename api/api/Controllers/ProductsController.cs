@@ -1,5 +1,7 @@
 using api.Models;
 using api.Services;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -11,16 +13,18 @@ public class ProductsController : ControllerBase
 {
     private readonly IProductService _productService;
     private readonly ILogger<ProductsController> _logger;
+    private readonly IWebHostEnvironment _hostEnvironment;
 
     public ProductsController(
         IProductService productService,
-        ILogger<ProductsController> logger)
+        ILogger<ProductsController> logger,
+        IWebHostEnvironment hostEnvironment)
     {
         _productService = productService;
         _logger = logger;
+        _hostEnvironment = hostEnvironment;
     }
 
-    // GET: api/products
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Product>>> GetProducts(
         [FromQuery] string? category = null,
@@ -32,36 +36,23 @@ public class ProductsController : ControllerBase
     {
         try
         {
-            IEnumerable<Product> products;
+            IEnumerable<Product> products = category != null
+                ? await _productService.GetProductsByCategoryAsync(category)
+                : search != null
+                    ? await _productService.SearchProductsAsync(search)
+                    : bestSellers == true
+                        ? await _productService.GetBestSellersAsync()
+                        : await _productService.GetAllProductsAsync();
 
-            if (!string.IsNullOrEmpty(category))
-            {
-                products = await _productService.GetProductsByCategoryAsync(category);
-            }
-            else if (!string.IsNullOrEmpty(search))
-            {
-                products = await _productService.SearchProductsAsync(search);
-            }
-            else if (bestSellers == true)
-            {
-                products = await _productService.GetBestSellersAsync();
-            }
-            else
-            {
-                products = await _productService.GetAllProductsAsync();
-            }
-
-            // Apply sorting
             products = sort?.ToLower() switch
             {
                 "price-low" => products.OrderBy(p => p.Price),
                 "price-high" => products.OrderByDescending(p => p.Price),
                 "rating" => products.OrderByDescending(p => p.Rating),
                 _ => products.OrderByDescending(p => p.IsBestSeller)
-                    .ThenByDescending(p => p.Rating)
+                             .ThenByDescending(p => p.Rating),
             };
 
-            // Pagination
             var totalCount = products.Count();
             var pagedProducts = products
                 .Skip((page - 1) * pageSize)
@@ -81,20 +72,13 @@ public class ProductsController : ControllerBase
         }
     }
 
-    // GET: api/products/5
     [HttpGet("{id}")]
     public async Task<ActionResult<Product>> GetProduct(int id)
     {
         try
         {
             var product = await _productService.GetProductByIdAsync(id);
-
-            if (product == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(product);
+            return product == null ? NotFound() : Ok(product);
         }
         catch (Exception ex)
         {
@@ -103,15 +87,28 @@ public class ProductsController : ControllerBase
         }
     }
 
-    // POST: api/products
     [HttpPost]
-    public async Task<ActionResult<Product>> CreateProduct([FromBody] ProductCreateDto productDto)
+    public async Task<ActionResult<Product>> CreateProduct([FromForm] ProductCreateDto productDto)
     {
         try
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
+
+            string? imageUrl = null;
+
+            if (productDto.Image != null)
+            {
+                var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+                Directory.CreateDirectory(uploadsFolder);
+
+                var fileName = $"{Guid.NewGuid()}{Path.GetExtension(productDto.Image.FileName)}";
+                var filePath = Path.Combine(uploadsFolder, fileName);
+
+                using var stream = new FileStream(filePath, FileMode.Create);
+                await productDto.Image.CopyToAsync(stream);
+
+                imageUrl = $"/uploads/{fileName}";
             }
 
             var product = new Product
@@ -119,7 +116,7 @@ public class ProductsController : ControllerBase
                 Name = productDto.Name,
                 Description = productDto.Description,
                 Price = productDto.Price,
-                ImageUrl = productDto.ImageUrl,
+                ImageUrl = imageUrl,
                 Category = productDto.Category,
                 Rating = productDto.Rating,
                 Reviews = productDto.Reviews,
@@ -137,39 +134,32 @@ public class ProductsController : ControllerBase
         }
     }
 
-    // PUT: api/products/5
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateProduct(int id, [FromBody] ProductUpdateDto productDto)
     {
         try
         {
             if (id != productDto.Id)
-            {
                 return BadRequest("ID mismatch");
-            }
 
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
 
-            var existingProduct = await _productService.GetProductByIdAsync(id);
-            if (existingProduct == null)
-            {
+            var product = await _productService.GetProductByIdAsync(id);
+            if (product == null)
                 return NotFound();
-            }
 
-            existingProduct.Name = productDto.Name;
-            existingProduct.Description = productDto.Description;
-            existingProduct.Price = productDto.Price;
-            existingProduct.ImageUrl = productDto.ImageUrl;
-            existingProduct.Category = productDto.Category;
-            existingProduct.Rating = productDto.Rating;
-            existingProduct.Reviews = productDto.Reviews;
-            existingProduct.IsBestSeller = productDto.IsBestSeller;
-            existingProduct.UpdatedAt = DateTime.UtcNow;
+            product.Name = productDto.Name;
+            product.Description = productDto.Description;
+            product.Price = productDto.Price;
+            product.ImageUrl = productDto.ImageUrl;
+            product.Category = productDto.Category;
+            product.Rating = productDto.Rating;
+            product.Reviews = productDto.Reviews;
+            product.IsBestSeller = productDto.IsBestSeller;
+            product.UpdatedAt = DateTime.UtcNow;
 
-            await _productService.UpdateProductAsync(existingProduct);
+            await _productService.UpdateProductAsync(product);
 
             return NoContent();
         }
@@ -180,7 +170,6 @@ public class ProductsController : ControllerBase
         }
     }
 
-    // DELETE: api/products/5
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteProduct(int id)
     {
@@ -188,12 +177,9 @@ public class ProductsController : ControllerBase
         {
             var product = await _productService.GetProductByIdAsync(id);
             if (product == null)
-            {
                 return NotFound();
-            }
 
             await _productService.DeleteProductAsync(id);
-
             return NoContent();
         }
         catch (Exception ex)
@@ -204,17 +190,17 @@ public class ProductsController : ControllerBase
     }
 }
 
-// DTO classes
+// DTOs
 public class ProductCreateDto
 {
     public string Name { get; set; }
     public string Description { get; set; }
     public decimal Price { get; set; }
-    public string ImageUrl { get; set; }
     public string Category { get; set; }
     public double Rating { get; set; }
     public int Reviews { get; set; }
     public bool IsBestSeller { get; set; }
+    public IFormFile Image { get; set; }
 }
 
 public class ProductUpdateDto
