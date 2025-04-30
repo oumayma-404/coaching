@@ -22,9 +22,6 @@ interface Product {
     price: number
     imageUrl: string
     category: string
-    rating: number
-    reviews: number
-    isBestSeller: boolean
     createdAt: string
     updatedAt: string | null
 }
@@ -94,11 +91,8 @@ export default function ShopPage() {
                 return [...productList].sort((a, b) => a.price - b.price)
             case "price-high":
                 return [...productList].sort((a, b) => b.price - a.price)
-            case "rating":
-                return [...productList].sort((a, b) => b.rating - a.rating)
-            case "featured":
             default:
-                return [...productList].sort((a, b) => (a.isBestSeller === b.isBestSeller ? 0 : a.isBestSeller ? -1 : 1))
+                return [...productList]
         }
     }
 
