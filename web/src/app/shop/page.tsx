@@ -129,14 +129,12 @@ export default function ShopPage() {
     const handleAddToCart = (product: Product, event: React.MouseEvent) => {
         // Stop event propagation to prevent opening the modal when clicking the Add to Cart button
         event.stopPropagation()
-
         addItem({
             id: product.id.toString(),
             name: product.name,
             price: product.price, // Convert cents to dollars
-            image: getImageUrl(product.imageUrl),
-            category: product.category,
-        })
+            imageUrl: getImageUrl(product.imageUrl),
+            category: product.category})
 
         toast({
             title: "Added to cart",

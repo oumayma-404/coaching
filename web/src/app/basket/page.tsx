@@ -72,7 +72,7 @@ export default function BasketPage() {
                                                 <div
                                                     className="h-20 w-20 rounded-md overflow-hidden bg-[#f4efe8] flex-shrink-0">
                                                     <Image
-                                                        src={item.image || "/placeholder.svg"}
+                                                        src={item.imageUrl || "/placeholder.svg"}
                                                         alt={item.name}
                                                         width={80}
                                                         height={80}

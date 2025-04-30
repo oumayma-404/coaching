@@ -3,16 +3,16 @@
 "use client"
 
 import Image from "next/image"
-import { Button } from "@/components/ui/button"
-import { useCart } from "@/context/cart-context"
-import { useToast } from "@/components/ui/use-toast"
-import { useState } from "react"
+import {Button} from "@/components/ui/button"
+import {useCart} from "@/context/cart-context"
+import {useToast} from "@/components/ui/use-toast"
+import {useState} from "react"
 
 interface ProductCardProps {
     id: string
     name: string
     price: number
-    image: string
+    imageUrl: string
     category: string
     onImageClick?: () => void // Add this prop
 }
@@ -21,12 +21,12 @@ export default function ProductCard({
                                         id,
                                         name,
                                         price,
-                                        image,
+                                        imageUrl,
                                         category,
                                         onImageClick
                                     }: ProductCardProps) {
-    const { addItem } = useCart()
-    const { toast } = useToast()
+    const {addItem} = useCart()
+    const {toast} = useToast()
     const [imageError, setImageError] = useState(false)
 
     // Add a fallback image URL
@@ -34,11 +34,12 @@ export default function ProductCard({
 
     const handleAddToCart = (e: React.MouseEvent) => {
         e.stopPropagation() // Prevent event from bubbling up
+
         addItem({
             id,
             name,
             price,
-            image,
+            imageUrl,
             category,
         })
 
@@ -66,7 +67,7 @@ export default function ProductCard({
         >
             <div className="relative aspect-square overflow-hidden cursor-pointer">
                 <Image
-                    src={imageError ? fallbackImage : image}
+                    src={imageError ? fallbackImage : imageUrl}
                     alt={name}
                     width={300}
                     height={300}

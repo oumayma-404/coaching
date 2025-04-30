@@ -281,7 +281,7 @@ export default function ShopSection() {
                                                             id={product.id.toString()}
                                                             name={product.name}
                                                             price={product.price}
-                                                            image={product.imageUrl ? getImageUrl(product.imageUrl) : '/placeholder-product.jpg'}
+                                                            imageUrl={product.imageUrl ? getImageUrl(product.imageUrl) : '/placeholder-product.jpg'}
                                                             category={product.category}
                                                             onImageClick={() => handleProductClick(product)} // This will only be called on image/card click
                                                         />
@@ -336,7 +336,7 @@ export default function ShopSection() {
                                             id={product.id.toString()}
                                             name={product.name}
                                             price={product.price}
-                                            image={product.imageUrl ? getImageUrl(product.imageUrl) : '/placeholder-product.jpg'}
+                                            imageUrl={product.imageUrl ? getImageUrl(product.imageUrl) : '/placeholder-product.jpg'}
                                             category={product.category}
                                             onImageClick={() => handleProductClick(product)} // This will only be called on image/card click
 

@@ -45,7 +45,7 @@ export default function ProductDetailModal({ product, isOpen, onClose, getImageU
             id: product.id.toString(),
             name: product.name,
             price: product.price, // Convert cents to dollars
-            image: getImageUrl(product.imageUrl),
+            imageUrl: getImageUrl(product.imageUrl),
             category: product.category,
             quantity: quantity,
         })
