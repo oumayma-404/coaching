@@ -7,6 +7,7 @@ import {Button} from "@/components/ui/button"
 import {Dumbbell, ShoppingBag, Menu} from "lucide-react"
 import {useCart} from "@/context/cart-context"
 import {useState} from "react"
+import Image from "next/image";
 
 export default function Header() {
     const {itemCount} = useCart()
@@ -17,10 +18,12 @@ export default function Header() {
             className="sticky top-0 z-50 w-full border-b border-[#003942]/10 bg-[#f4efe8]/80 backdrop-blur-sm supports-[backdrop-filter]:bg-[#f4efe8]/60">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex h-16 items-center justify-between">
                 <div className="flex items-center gap-2 font-bold text-xl">
-                    <Link href="/" className="flex items-center gap-2">
-                        <Dumbbell className="h-6 w-6 text-[#003942]"/>
-                        <span className="text-[#003942]">FitWay</span>
-                    </Link>
+                    <div className="flex items-center gap-2">
+                        <Link href="/" className="flex items-center">
+                            <Image src="/images/logo.png" alt="FitWay Logo" width={120} height={40}
+                                   className="h-10 w-auto" priority/>
+                        </Link>
+                    </div>
                 </div>
 
                 <nav className="hidden md:flex gap-6">
@@ -28,7 +31,7 @@ export default function Header() {
                         Home
                     </Link>
                     <Link href="/results" className="text-sm font-medium transition-colors hover:text-[#003942]">
-                        Results
+                    Results
                     </Link>
                     <Link href="/coaching" className="text-sm font-medium transition-colors hover:text-[#003942]">
                         Coaching

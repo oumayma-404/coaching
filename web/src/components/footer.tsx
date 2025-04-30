@@ -2,6 +2,7 @@
 /* eslint-disable react/no-unescaped-entities */
 import Link from "next/link"
 import { Dumbbell, Instagram, Facebook, Twitter, Youtube, ArrowRight } from "lucide-react"
+import Image from "next/image";
 
 export default function Footer() {
     return (
@@ -30,11 +31,14 @@ export default function Footer() {
                 <div className="py-10 flex flex-col md:flex-row justify-between">
                     <div className="flex flex-col items-center md:items-start gap-4 mb-6 md:mb-0">
                         <div className="flex items-center gap-2">
-                            <Dumbbell className="h-6 w-6 text-[#003942]" />
-                            <span className="font-bold text-lg text-[#003942]">FitWay</span>
+                            <Link href="/" className="flex items-center">
+                                <Image src="/images/logo.png" alt="FitWay Logo" width={120} height={40}
+                                       className="h-10 w-auto" priority/>
+                            </Link>
                         </div>
                         <p className="text-center md:text-left text-sm text-[#003942]/70 max-w-xs">
-                            Empowering individuals to achieve their fitness goals through expert coaching and personalized programs.
+                            Empowering individuals to achieve their fitness goals through expert coaching and
+                            personalized programs.
                         </p>
                     </div>
 
