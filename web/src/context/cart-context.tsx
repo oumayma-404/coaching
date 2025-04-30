@@ -9,7 +9,7 @@ export interface CartItem {
     name: string
     price: number
     imageUrl: string
-    quantity?: number
+    quantity: number
 }
 
 // Define the CartContextType interface
