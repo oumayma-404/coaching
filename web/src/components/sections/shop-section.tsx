@@ -252,7 +252,6 @@ export default function ShopSection() {
                             ))}
                         </TabsList>
                     </div>
-
                     {categories.map((category) => (
                         <TabsContent key={category} value={category} className="mt-6 relative">
                             {/* Mobile Slider */}
@@ -267,7 +266,7 @@ export default function ShopSection() {
                                         >
                                             <div
                                                 className="flex transition-transform duration-700 ease-in-out"
-                                                style={{transform: `translateX(-${currentSlide * 100}%)`}}
+                                                style={{ transform: `translateX(-${currentSlide * 100}%)` }}
                                             >
                                                 {getProductsByCategory(category)?.map((product) => (
                                                     <div
@@ -283,7 +282,7 @@ export default function ShopSection() {
                                                             price={product.price}
                                                             imageUrl={product.imageUrl ? getImageUrl(product.imageUrl) : '/placeholder-product.jpg'}
                                                             category={product.category}
-                                                            onImageClick={() => handleProductClick(product)} // This will only be called on image/card click
+                                                            onImageClick={() => handleProductClick(product)}
                                                         />
                                                     </div>
                                                 ))}
@@ -296,14 +295,14 @@ export default function ShopSection() {
                                             className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 bg-white rounded-full p-2 shadow-md z-10"
                                             aria-label="Previous product"
                                         >
-                                            <ChevronLeft className="h-6 w-6 text-[#003942]"/>
+                                            <ChevronLeft className="h-6 w-6 text-[#003942]" />
                                         </button>
                                         <button
                                             onClick={nextSlide}
                                             className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 bg-white rounded-full p-2 shadow-md z-10"
                                             aria-label="Next product"
                                         >
-                                            <ChevronRight className="h-6 w-6 text-[#003942]"/>
+                                            <ChevronRight className="h-6 w-6 text-[#003942]" />
                                         </button>
 
                                         {/* Pagination Dots */}
@@ -328,25 +327,25 @@ export default function ShopSection() {
                             </div>
 
                             {/* Desktop Grid */}
-                            <div className="hidden sm:grid grid-cols-2 lg:grid-cols-4 gap-6"
-                            >
-                                {getProductsByCategory(category)?.map((product) => (
-                                    <div key={`${category}-desktop-${product.id}`}>
-                                        <ProductCard
-                                            id={product.id.toString()}
-                                            name={product.name}
-                                            price={product.price}
-                                            imageUrl={product.imageUrl ? getImageUrl(product.imageUrl) : '/placeholder-product.jpg'}
-                                            category={product.category}
-                                            onImageClick={() => handleProductClick(product)} // This will only be called on image/card click
-
-                                        />
-                                    </div>
-                                )) }: (
+                            <div className="hidden sm:grid grid-cols-2 lg:grid-cols-4 gap-6">
+                                {getProductsByCategory(category).length > 0 ? (
+                                    getProductsByCategory(category).map((product) => (
+                                        <div key={`${category}-desktop-${product.id}`}>
+                                            <ProductCard
+                                                id={product.id.toString()}
+                                                name={product.name}
+                                                price={product.price}
+                                                imageUrl={product.imageUrl ? getImageUrl(product.imageUrl) : '/placeholder-product.jpg'}
+                                                category={product.category}
+                                                onImageClick={() => handleProductClick(product)}
+                                            />
+                                        </div>
+                                    ))
+                                ) : (
                                     <div className="col-span-full text-center py-10">
                                         <p className="text-[#003942]/70">No products found in this category.</p>
                                     </div>
-                                )
+                                )}
                             </div>
                         </TabsContent>
                     ))}
