@@ -115,7 +115,7 @@ export default function PaymentPage() {
         return Object.keys(newErrors).length === 0
     }
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
 
         if (!validateForm()) {
@@ -124,22 +124,71 @@ export default function PaymentPage() {
 
         setIsProcessing(true)
 
-        // Simulate preparing order and redirecting to payment processor
-        setTimeout(() => {
-            // In a real application, you would:
-            // 1. Send the order details to your backend
-            // 2. Get a payment URL from your payment processor
-            // 3. Redirect the user to that URL
+        try {
+            // Format the shipping address as a single string
+            const formattedAddress = `${userInfo.address}, ${userInfo.city}, ${userInfo.state} ${userInfo.postal_code}, ${userInfo.country}`
 
-            toast({
-                title: "Redirecting to payment processor",
-                description: "You will be redirected to complete your payment.",
-                duration: 3000,
+            // Format the name (combine first and last name)
+            const fullName = `${userInfo.first_name} ${userInfo.last_name}`
+
+            // Prepare the order request payload
+            const orderRequest = {
+                email: userInfo.email,
+                name: fullName,
+                phone: userInfo.phone,
+                shippingAddress: formattedAddress,
+                items: items.map((item) => ({
+                    productId: Number.parseInt(item.id), // Convert string ID to number
+                    quantity: item.quantity,
+                })),
+            }
+
+            // Make the API call to create the order
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/Orders`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(orderRequest),
             })
 
-            // Simulate redirect to payment processor
-            window.location.href = `https://payment-processor.example.com/pay?amount=${total.toFixed(2)}&reference=ORDER-${Date.now()}`
-        }, 1500)
+            if (!response.ok) {
+                const errorData = await response.json()
+                throw new Error(errorData.message || "Failed to create order")
+            }
+
+            // Get the order ID and payment URL from the response
+            const { orderId, paymentUrl } = await response.json()
+
+            // Store the order ID in localStorage for reference (optional)
+            localStorage.setItem("lastOrderId", orderId.toString())
+
+            // Show toast notification before redirecting
+            toast({
+                title: "Redirecting to payment",
+                description: "You will be redirected to complete your payment.",
+                duration: 2000,
+            })
+
+            // Clear the cart after successful order creation
+            clearCart()
+
+            // Short delay before redirecting to payment URL
+            setTimeout(() => {
+                window.location.href = paymentUrl
+            }, 1500)
+        } catch (error) {
+            console.error("Error creating order:", error)
+
+            toast({
+                title: "Error",
+                description: error instanceof Error ? error.message : "Failed to process your order. Please try again.",
+                variant: "destructive",
+                duration: 5000,
+            })
+
+            setIsProcessing(false)
+        }
     }
 
     if (isComplete) {

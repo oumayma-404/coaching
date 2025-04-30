@@ -1,3 +1,4 @@
+using api.Contract;
 using api.Models;
 using api.Repositories;
 using Microsoft.Extensions.Logging;
@@ -88,7 +89,7 @@ public class OrderService : IOrderService
     {
         try
         {
-            var order = await _orderRepository.GetByIdAsync(id);
+            var order = await _orderRepository.GetByIdAsync(id, o => o.OrderItems);
 
             if (order == null)
             {
@@ -117,7 +118,7 @@ public class OrderService : IOrderService
         }
     }
 
-    public async Task<IEnumerable<Order>> GetOrdersByEmailAsync(string email)
+    public async Task<IEnumerable<OrderDto>> GetOrdersByEmailAsync(string email)
     {
         try
         {
@@ -128,7 +129,7 @@ public class OrderService : IOrderService
 
             // Assuming your repository supports querying
             var orders = await _orderRepository.FindAllAsync(o =>
-                o.CustomerEmail.ToLower() == email.ToLower());
+                o.CustomerEmail.ToLower() == email.ToLower(), o => o.OrderItems);
 
             // Load product information for each order item
             foreach (var order in orders)
@@ -145,7 +146,23 @@ public class OrderService : IOrderService
                 }
             }
 
-            return orders.OrderByDescending(o => o.OrderDate);
+            return orders.Select(o => new OrderDto
+            {
+                Id = o.Id,
+                CustomerEmail = o.CustomerEmail,
+                CustomerName = o.CustomerName,
+                OrderItems = o.OrderItems.Select(oi => new OrderItemDto
+                {
+                    ProductId = oi.ProductId,
+                    ProductName = oi.Product.Name, // Assuming Product has a Name
+                    Quantity = oi.Quantity,
+                    Price = oi.Price
+                }).ToList(),
+                Total = o.Total,
+                Status = o.Status,
+                OrderDate = o.OrderDate,
+                ShippingAddress = o.ShippingAddress
+            }).OrderByDescending(o => o.OrderDate);
         }
         catch (Exception ex)
         {
@@ -169,6 +186,7 @@ public class OrderService : IOrderService
             // Add status change history if needed
 
             await _orderRepository.UpdateAsync(order);
+            await _emailService.SendOrderStatusUpdateAsync(order.CustomerEmail, order);
         }
         catch (Exception ex)
         {

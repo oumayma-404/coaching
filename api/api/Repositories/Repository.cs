@@ -25,16 +25,44 @@ public class Repository<T> : IRepository<T> where T : class
         return await _context.Set<T>().Where(predicate).ToListAsync();
     }
 
+    public async Task<IEnumerable<T>> FindAllAsync(Expression<Func<T, bool>> predicate,
+        params Expression<Func<T, object>>[] includes)
+    {
+        var query = _context.Set<T>().Where(predicate);
+    
+        // Include all specified navigation properties
+        if (includes != null)
+        {
+            query = includes.Aggregate(query, (current, include) => current.Include(include));
+        }
+    
+        return await query.ToListAsync();
+    }
+
+
 
     public async Task<T> GetByIdAsync(int id)
     {
         return await _context.Set<T>().FindAsync(id);
     }
+    // Then in your repository implementation:
+    public async Task<T> GetByIdAsync(int id, params Expression<Func<T, object>>[] includes)
+    {
+        var query = _context.Set<T>().AsQueryable();
+    
+        foreach (var include in includes)
+        {
+            query = query.Include(include);
+        }
+    
+        return await query.FirstOrDefaultAsync(e => EF.Property<int>(e, "Id") == id);
+    }
 
     public async Task AddAsync(T entity)
     {
         await _context.Set<T>().AddAsync(entity);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(); // <-- This saves related entities too
+
     }
 
     public async Task UpdateAsync(T entity)

@@ -34,8 +34,10 @@ public class ApplicationDbContext : DbContext
         // Configure relationships
         builder.Entity<Order>()
             .HasMany(o => o.OrderItems)
-            .WithOne()
+            .WithOne(oi => oi.Order) // <-- Correct navigation property
+            .HasForeignKey(oi => oi.OrderId)
             .OnDelete(DeleteBehavior.Cascade);
+
             
         // Configure case-insensitive email for PostgreSQL
         builder.Entity<Order>()

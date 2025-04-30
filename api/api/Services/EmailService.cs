@@ -75,20 +75,117 @@ public class EmailService : IEmailService
         }
     }
 
-    private string BuildOrderConfirmationHtml(Order order)
-    {
-        return $@"
-            <h1>Thank you for your order!</h1>
-            <p>Order #: {order.Id}</p>
-            <p>Date: {order.OrderDate:g}</p>
-            <p>Total: {order.Total:C}</p>
-            <h2>Items:</h2>
-            <ul>
-                {string.Join("", order.OrderItems.Select(i =>
-                    $"<li>{i.Product?.Name} - {i.Quantity} x {i.Price:C}</li>"))}
-            </ul>
-        ";
-    }
+   private string BuildOrderConfirmationHtml(Order order)
+{
+    var logoUrl = _config["EmailSettings:LogoUrl"];
+    
+    return $@"
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>Order Confirmation #{order.Id}</title>
+    <style>
+        body {{
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }}
+        .header {{
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 30px;
+        }}
+        .logo {{
+            max-width: 150px;
+            height: auto;
+        }}
+        .order-details {{
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }}
+        .item-table {{
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }}
+        .item-table th {{
+            background: #f0f0f0;
+            padding: 10px;
+            text-align: left;
+        }}
+        .item-table td {{
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }}
+        .total {{
+            font-weight: bold;
+            font-size: 1.2em;
+            text-align: right;
+        }}
+        .footer {{
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            font-size: 0.9em;
+            color: #777;
+            text-align: center;
+        }}
+    </style>
+</head>
+<body>
+    <div class='header'>
+        <img src='{logoUrl}' alt='Sports Coach Logo' class='logo'>
+        <h1>Order Confirmation</h1>
+    </div>
+    
+    <div class='order-details'>
+        <p>Thank you for your order! Here are your order details:</p>
+        <p><strong>Order #:</strong> {order.Id}</p>
+        <p><strong>Date:</strong> {order.OrderDate:g}</p>
+        <p><strong>Status:</strong> {order.Status}</p>
+    </div>
+    
+    <h2>Order Items</h2>
+    <table class='item-table'>
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Subtotal</th>
+            </tr>
+        </thead>
+        <tbody>
+            {string.Join("", order.OrderItems.Select(i => $@"
+            <tr>
+                <td>{i.Product?.Name}</td>
+                <td>{i.Quantity}</td>
+                <td>{i.Price:C}</td>
+                <td>{(i.Quantity * i.Price):C}</td>
+            </tr>"))}
+        </tbody>
+    </table>
+    
+    <div class='total'>
+        <p><strong>Total: {order.Total:C}</strong></p>
+    </div>
+    
+    <div class='footer'>
+        <p>If you have any questions about your order, please contact us at support@sportscoach.com</p>
+        <p>© {DateTime.Now.Year} Sports Coach. All rights reserved.</p>
+    </div>
+</body>
+</html>
+";
+}
 
     private string BuildOrderStatusUpdateHtml(Order order)
     {
