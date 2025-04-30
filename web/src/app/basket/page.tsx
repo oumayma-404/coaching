@@ -12,7 +12,7 @@ import CenteredContainer from "@/layout/centered-container"
 import {useCart} from "@/context/cart-context"
 
 export default function BasketPage() {
-    const {items, removeItem, updateQuantity, clearCart} = useCart()
+    const {items, removeItem, updateItemQuantity, clearCart} = useCart()
     const [promoCode, setPromoCode] = useState("")
     const [promoApplied, setPromoApplied] = useState(false)
 
@@ -87,7 +87,7 @@ export default function BasketPage() {
                                                 <div className="flex items-center gap-4">
                                                     <div className="flex items-center">
                                                         <button
-                                                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                                                            onClick={() => updateItemQuantity(item.id, item.quantity - 1)}
                                                             className="h-8 w-8 flex items-center justify-center rounded-l-md border border-r-0 border-[#003942]/20 bg-[#f4efe8] hover:bg-[#003942]/10 text-[#003942]"
                                                         >
                                                             -
@@ -96,11 +96,11 @@ export default function BasketPage() {
                                                             type="number"
                                                             min="1"
                                                             value={item.quantity}
-                                                            onChange={(e) => updateQuantity(item.id, Number.parseInt(e.target.value) || 1)}
+                                                            onChange={(e) => updateItemQuantity(item.id, Number.parseInt(e.target.value) || 1)}
                                                             className="h-8 w-12 border border-[#003942]/20 text-center text-sm text-[#003942] [-moz-appearance:_textfield] [&::-webkit-inner-spin-button]:m-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-outer-spin-button]:appearance-none"
                                                         />
                                                         <button
-                                                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                                                            onClick={() => updateItemQuantity(item.id, item.quantity + 1)}
                                                             className="h-8 w-8 flex items-center justify-center rounded-r-md border border-l-0 border-[#003942]/20 bg-[#f4efe8] hover:bg-[#003942]/10 text-[#003942]"
                                                         >
                                                             +
