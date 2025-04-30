@@ -16,6 +16,7 @@ export interface CartItem {
 // Define the CartContextType interface
 interface CartContextType {
     items: CartItem[]
+    itemCount: number // Add this
     addItem: (item: CartItem) => void
     removeItem: (itemId: string) => void
     updateItemQuantity: (itemId: string, quantity: number) => void
