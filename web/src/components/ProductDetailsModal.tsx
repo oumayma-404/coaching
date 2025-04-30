@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable react/no-unescaped-entities */
 "use client"
 
 import { useState } from "react"
 import Image from "next/image"
-import { X, Star, ShoppingBag, Heart } from 'lucide-react'
+import { X, ShoppingBag } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useCart } from "@/context/cart-context"

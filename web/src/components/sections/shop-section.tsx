@@ -331,6 +331,7 @@ export default function ShopSection() {
                             <div className="hidden sm:grid grid-cols-2 lg:grid-cols-4 gap-6"
                             >
                                 {getProductsByCategory(category)?.map((product) => (
+                                    <div key={`${category}-desktop-${product.id}`}>
                                         <ProductCard
                                             id={product.id.toString()}
                                             name={product.name}
@@ -340,6 +341,7 @@ export default function ShopSection() {
                                             onImageClick={() => handleProductClick(product)} // This will only be called on image/card click
 
                                         />
+                                    </div>
                                 )) }: (
                                     <div className="col-span-full text-center py-10">
                                         <p className="text-[#003942]/70">No products found in this category.</p>
