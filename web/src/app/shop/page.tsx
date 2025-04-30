@@ -134,7 +134,8 @@ export default function ShopPage() {
             name: product.name,
             price: product.price, // Convert cents to dollars
             imageUrl: getImageUrl(product.imageUrl),
-            category: product.category})
+            category: product.category,
+            quantity: 1})
 
         toast({
             title: "Added to cart",

@@ -36,12 +36,12 @@ export default function ProductCard({
         e.stopPropagation() // Prevent event from bubbling up
 
         addItem({
-            id,
-            name,
-            price,
-            imageUrl,
-            category,
-        })
+            id: id.toString(),
+            name: name,
+            price: price, // Convert cents to dollars
+            imageUrl: imageUrl,
+            category: category,
+            quantity: 1})
 
         toast({
             title: "Added to cart",
