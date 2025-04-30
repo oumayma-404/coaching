@@ -254,7 +254,7 @@ export default function PaymentPage() {
                                         <div key={item.id} className="flex gap-4">
                                             <div className="h-16 w-16 rounded-md overflow-hidden bg-[#f4efe8] flex-shrink-0">
                                                 <Image
-                                                    src={item.image || "/placeholder.svg"}
+                                                    src={item.imageUrl || "/placeholder.svg"}
                                                     alt={item.name}
                                                     width={64}
                                                     height={64}
