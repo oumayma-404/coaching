@@ -45,7 +45,7 @@ function CoachingPlanCard({
             </CardHeader>
             <CardContent className="space-y-4">
                 <div className="text-4xl font-bold text-[#003942]">
-                    {price}TND
+                     {price} DT
                     <span className="text-sm font-normal text-[#003942]/50">/month</span>
                 </div>
                 <ul className="space-y-2 text-sm">

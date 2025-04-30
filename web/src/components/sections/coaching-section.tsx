@@ -70,16 +70,20 @@ export default function CoachingSection() {
             </div>
 
             <div className="mt-16 text-center">
-                <div className="inline-flex items-center justify-center p-4 bg-white rounded-lg shadow-sm border border-[#003942]/10 mb-6">
-                    <Star className="h-5 w-5 text-yellow-500 mr-2" />
+                <div
+                    className="inline-flex items-center justify-center p-4 bg-white rounded-lg shadow-sm border border-[#003942]/10 mb-6">
+                    <Star className="h-5 w-5 text-yellow-500 mr-2"/>
                     <p className="text-[#003942] font-medium">
                         Not sure which plan is right for you? Schedule a free consultation call.
                     </p>
                 </div>
-                <Button variant="outline" size="lg" className="border-[#003942] text-[#003942] hover:bg-[#003942]/10">
-                    Book Free Consultation
-                    <ChevronRight className="ml-2 h-4 w-4" />
-                </Button>
+                <a href={"https://wa.me/+21620491086"}>
+                    <Button variant="outline" size="lg"
+                            className="border-[#003942] text-[#003942] hover:bg-[#003942]/10">
+                        Contact me via Whatsapp
+                        <ChevronRight className="ml-2 h-4 w-4"/>
+                    </Button>
+                </a>
             </div>
         </CenteredContainer>
     </section>

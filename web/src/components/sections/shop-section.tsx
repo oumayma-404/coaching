@@ -4,12 +4,13 @@
 
 import type React from "react"
 
-import { useState, useEffect } from "react"
+import {useState, useEffect} from "react"
 import Link from "next/link"
-import { ShoppingBag, ArrowRight, ChevronLeft, ChevronRight, Loader2 } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import {ShoppingBag, ArrowRight, ChevronLeft, ChevronRight, Loader2} from "lucide-react"
+import {Button} from "@/components/ui/button"
+import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs"
 import ProductCard from "@/components/ui/product-card"
+import ProductDetailModal from "@/components/ProductDetailsModal";
 
 // Define the Product type based on the API response
 interface Product {
@@ -19,9 +20,6 @@ interface Product {
     price: number
     imageUrl: string
     category: string
-    rating: number
-    reviews: number
-    isBestSeller: boolean
     createdAt: string
     updatedAt: string | null
 }
@@ -35,6 +33,8 @@ export default function ShopSection() {
     const [isLoading, setIsLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
     const [products, setProducts] = useState<Product[]>([])
+    const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
+    const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
 
     // Check if we're on mobile
     useEffect(() => {
@@ -133,12 +133,23 @@ export default function ShopSection() {
     // Get the base URL for images
     const getImageUrl = (path: string) => {
         // If the path is already a full URL, return it as is
-        if (path.startsWith("http")) {
+        if (path?.startsWith("http")) {
             return path
         }
 
         // Otherwise, prepend the API base URL
         return `${process.env.NEXT_PUBLIC_API_URL}${path}`
+    }
+
+    // Handle product click to open modal
+    const handleProductClick = (product: Product) => {
+        setSelectedProduct(product)
+        setIsModalOpen(true)
+    }
+
+    // Close the modal
+    const handleCloseModal = () => {
+        setIsModalOpen(false)
     }
 
     // Render loading state
@@ -148,8 +159,9 @@ export default function ShopSection() {
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div className="flex flex-col items-center justify-center space-y-4 text-center">
                         <div className="space-y-2">
-                            <div className="inline-flex items-center rounded-full border border-[#003942]/20 bg-[#003942]/10 px-2.5 py-0.5 text-sm font-semibold text-[#003942]">
-                                <ShoppingBag className="mr-1 h-4 w-4" />
+                            <div
+                                className="inline-flex items-center rounded-full border border-[#003942]/20 bg-[#003942]/10 px-2.5 py-0.5 text-sm font-semibold text-[#003942]">
+                                <ShoppingBag className="mr-1 h-4 w-4"/>
                                 Shop
                             </div>
                             <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl text-[#003942]">
@@ -161,7 +173,7 @@ export default function ShopSection() {
                         </div>
                     </div>
                     <div className="flex justify-center items-center py-20">
-                        <Loader2 className="h-10 w-10 text-[#003942] animate-spin" />
+                        <Loader2 className="h-10 w-10 text-[#003942] animate-spin"/>
                         <span className="ml-2 text-[#003942]">Loading products...</span>
                     </div>
                 </div>
@@ -176,8 +188,9 @@ export default function ShopSection() {
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div className="flex flex-col items-center justify-center space-y-4 text-center">
                         <div className="space-y-2">
-                            <div className="inline-flex items-center rounded-full border border-[#003942]/20 bg-[#003942]/10 px-2.5 py-0.5 text-sm font-semibold text-[#003942]">
-                                <ShoppingBag className="mr-1 h-4 w-4" />
+                            <div
+                                className="inline-flex items-center rounded-full border border-[#003942]/20 bg-[#003942]/10 px-2.5 py-0.5 text-sm font-semibold text-[#003942]">
+                                <ShoppingBag className="mr-1 h-4 w-4"/>
                                 Shop
                             </div>
                             <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl text-[#003942]">
@@ -190,7 +203,8 @@ export default function ShopSection() {
                     </div>
                     <div className="flex flex-col items-center justify-center py-20">
                         <p className="text-red-500 mb-4">{error}</p>
-                        <Button onClick={() => window.location.reload()} className="bg-[#003942] text-[#f4efe8] hover:bg-[#004e5a]">
+                        <Button onClick={() => window.location.reload()}
+                                className="bg-[#003942] text-[#f4efe8] hover:bg-[#004e5a]">
                             Try Again
                         </Button>
                     </div>
@@ -207,8 +221,9 @@ export default function ShopSection() {
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div className="flex flex-col items-center justify-center space-y-4 text-center">
                     <div className="space-y-2">
-                        <div className="inline-flex items-center rounded-full border border-[#003942]/20 bg-[#003942]/10 px-2.5 py-0.5 text-sm font-semibold text-[#003942]">
-                            <ShoppingBag className="mr-1 h-4 w-4" />
+                        <div
+                            className="inline-flex items-center rounded-full border border-[#003942]/20 bg-[#003942]/10 px-2.5 py-0.5 text-sm font-semibold text-[#003942]">
+                            <ShoppingBag className="mr-1 h-4 w-4"/>
                             Shop
                         </div>
                         <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl text-[#003942]">
@@ -251,17 +266,24 @@ export default function ShopSection() {
                                             onTouchEnd={handleTouchEnd}
                                         >
                                             <div
-                                                className="flex transition-transform duration-300 ease-in-out"
-                                                style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+                                                className="flex transition-transform duration-700 ease-in-out"
+                                                style={{transform: `translateX(-${currentSlide * 100}%)`}}
                                             >
-                                                {getProductsByCategory(category).map((product) => (
-                                                    <div key={`${category}-mobile-${product.id}`} className="w-full flex-shrink-0 px-4">
+                                                {getProductsByCategory(category)?.map((product) => (
+                                                    <div
+                                                        key={`${category}-mobile-${product.id}`}
+                                                        className="w-full flex-shrink-0 px-4 cursor-pointer transition-transform hover:scale-[1.02]"
+                                                        role="button"
+                                                        tabIndex={0}
+                                                        aria-label={`View ${product.name} details`}
+                                                    >
                                                         <ProductCard
                                                             id={product.id.toString()}
                                                             name={product.name}
                                                             price={product.price}
-                                                            image={getImageUrl(product.imageUrl)}
+                                                            image={product.imageUrl ? getImageUrl(product.imageUrl) : '/placeholder-product.jpg'}
                                                             category={product.category}
+                                                            onImageClick={() => handleProductClick(product)} // This will only be called on image/card click
                                                         />
                                                     </div>
                                                 ))}
@@ -274,14 +296,14 @@ export default function ShopSection() {
                                             className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 bg-white rounded-full p-2 shadow-md z-10"
                                             aria-label="Previous product"
                                         >
-                                            <ChevronLeft className="h-6 w-6 text-[#003942]" />
+                                            <ChevronLeft className="h-6 w-6 text-[#003942]"/>
                                         </button>
                                         <button
                                             onClick={nextSlide}
                                             className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 bg-white rounded-full p-2 shadow-md z-10"
                                             aria-label="Next product"
                                         >
-                                            <ChevronRight className="h-6 w-6 text-[#003942]" />
+                                            <ChevronRight className="h-6 w-6 text-[#003942]"/>
                                         </button>
 
                                         {/* Pagination Dots */}
@@ -306,23 +328,23 @@ export default function ShopSection() {
                             </div>
 
                             {/* Desktop Grid */}
-                            <div className="hidden sm:grid grid-cols-2 lg:grid-cols-4 gap-6">
-                                {getProductsByCategory(category).length > 0 ? (
-                                    getProductsByCategory(category).map((product) => (
+                            <div className="hidden sm:grid grid-cols-2 lg:grid-cols-4 gap-6"
+                            >
+                                {getProductsByCategory(category)?.map((product) => (
                                         <ProductCard
-                                            key={`${category}-desktop-${product.id}`}
                                             id={product.id.toString()}
                                             name={product.name}
                                             price={product.price}
-                                            image={getImageUrl(product.imageUrl)}
+                                            image={product.imageUrl ? getImageUrl(product.imageUrl) : '/placeholder-product.jpg'}
                                             category={product.category}
+                                            onImageClick={() => handleProductClick(product)} // This will only be called on image/card click
+
                                         />
-                                    ))
-                                ) : (
+                                )) }: (
                                     <div className="col-span-full text-center py-10">
                                         <p className="text-[#003942]/70">No products found in this category.</p>
                                     </div>
-                                )}
+                                )
                             </div>
                         </TabsContent>
                     ))}
@@ -330,13 +352,21 @@ export default function ShopSection() {
 
                 <div className="mt-12 flex justify-center">
                     <Link href="/shop">
-                        <Button variant="outline" size="lg" className="border-[#003942] text-[#003942] hover:bg-[#003942]/10 group">
+                        <Button variant="outline" size="lg"
+                                className="border-[#003942] text-[#003942] hover:bg-[#003942]/10 group">
                             View All Products
-                            <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                            <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1"/>
                         </Button>
                     </Link>
                 </div>
             </div>
+            {/* Product Detail Modal */}
+            <ProductDetailModal
+                product={selectedProduct}
+                isOpen={isModalOpen}
+                onClose={handleCloseModal}
+                getImageUrl={getImageUrl}
+            />
         </section>
     )
 }

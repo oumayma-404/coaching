@@ -3,7 +3,7 @@
 import Image from "next/image"
 import {Button} from "@/components/ui/button"
 import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "@/components/ui/card"
-import { Check, Dumbbell, ChevronRight, Users, Calendar, BarChart3, Clock, Star, Trophy } from "lucide-react"
+import {Check, Dumbbell, ChevronRight, Users, Calendar, BarChart3, Clock, Star, Trophy} from "lucide-react"
 import CenteredContainer from "@/layout/centered-container"
 import {CoachingPlanCard} from "@/components/ui/Coaching-plan-card"
 
@@ -36,19 +36,21 @@ export default function CoachingPage() {
                 <CenteredContainer>
                     <div className="grid md:grid-cols-2 gap-12 items-center">
                         <div className="space-y-8 order-2 md:order-1">
-                            <div className="inline-flex items-center rounded-full bg-[#003942]/10 px-3 py-1.5 text-sm font-semibold text-[#003942]">
+                            <div
+                                className="inline-flex items-center rounded-full bg-[#003942]/10 px-3 py-1.5 text-sm font-semibold text-[#003942]">
                                 Our Approach
                             </div>
                             <h2 className="text-3xl font-bold text-[#003942]">A Holistic Coaching Philosophy</h2>
                             <p className="text-[#003942]/70 text-lg">
-                                At FitCoach, we believe in a comprehensive approach to fitness that addresses all aspects of your
+                                At FitCoach, we believe in a comprehensive approach to fitness that addresses all
+                                aspects of your
                                 well-being. Our methods are backed by science and proven through results.
                             </p>
 
                             <div className="grid grid-cols-2 gap-6 pt-4">
                                 <div className="flex items-start">
                                     <div className="mr-4 bg-[#003942]/10 p-3 rounded-full">
-                                        <Users className="h-5 w-5 text-[#003942]" />
+                                        <Users className="h-5 w-5 text-[#003942]"/>
                                     </div>
                                     <div>
                                         <h3 className="font-medium text-[#003942]">Personalized</h3>
@@ -57,7 +59,7 @@ export default function CoachingPage() {
                                 </div>
                                 <div className="flex items-start">
                                     <div className="mr-4 bg-[#003942]/10 p-3 rounded-full">
-                                        <Calendar className="h-5 w-5 text-[#003942]" />
+                                        <Calendar className="h-5 w-5 text-[#003942]"/>
                                     </div>
                                     <div>
                                         <h3 className="font-medium text-[#003942]">Consistent</h3>
@@ -66,7 +68,7 @@ export default function CoachingPage() {
                                 </div>
                                 <div className="flex items-start">
                                     <div className="mr-4 bg-[#003942]/10 p-3 rounded-full">
-                                        <BarChart3 className="h-5 w-5 text-[#003942]" />
+                                        <BarChart3 className="h-5 w-5 text-[#003942]"/>
                                     </div>
                                     <div>
                                         <h3 className="font-medium text-[#003942]">Data-Driven</h3>
@@ -75,7 +77,7 @@ export default function CoachingPage() {
                                 </div>
                                 <div className="flex items-start">
                                     <div className="mr-4 bg-[#003942]/10 p-3 rounded-full">
-                                        <Clock className="h-5 w-5 text-[#003942]" />
+                                        <Clock className="h-5 w-5 text-[#003942]"/>
                                     </div>
                                     <div>
                                         <h3 className="font-medium text-[#003942]">Sustainable</h3>
@@ -89,8 +91,10 @@ export default function CoachingPage() {
                         <div className="relative order-1 md:order-2">
                             <div className="aspect-square max-w-md mx-auto relative">
                                 <div className="absolute inset-0 bg-[#003942]/5 rounded-full transform rotate-45"></div>
-                                <div className="absolute inset-4 bg-[#003942]/10 rounded-full transform -rotate-12"></div>
-                                <div className="absolute inset-8 bg-white rounded-full shadow-lg overflow-hidden border-4 border-[#f4efe8]">
+                                <div
+                                    className="absolute inset-4 bg-[#003942]/10 rounded-full transform -rotate-12"></div>
+                                <div
+                                    className="absolute inset-8 bg-white rounded-full shadow-lg overflow-hidden border-4 border-[#f4efe8]">
                                     <Image
                                         src="/images/smallCoach.jpeg"
                                         alt="Coaching Philosophy"
@@ -99,8 +103,9 @@ export default function CoachingPage() {
                                         className="object-cover w-full h-full"
                                     />
                                 </div>
-                                <div className="absolute -bottom-4 -right-4 bg-[#003942] text-white p-4 rounded-full shadow-lg">
-                                    <Trophy className="h-8 w-8" />
+                                <div
+                                    className="absolute -bottom-4 -right-4 bg-[#003942] text-white p-4 rounded-full shadow-lg">
+                                    <Trophy className="h-8 w-8"/>
                                 </div>
                             </div>
                         </div>
@@ -111,20 +116,24 @@ export default function CoachingPage() {
             {/* Coaching Plans Section - Enhanced with visual elements */}
             <section id={"coaching-plans"} className="py-20 bg-[#f4efe8] relative overflow-hidden">
                 {/* Decorative background elements */}
-                <div className="absolute top-0 right-0 w-64 h-64 bg-[#003942]/5 rounded-full transform translate-x-1/2 -translate-y-1/2"></div>
-                <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#003942]/5 rounded-full transform -translate-x-1/2 translate-y-1/2"></div>
+                <div
+                    className="absolute top-0 right-0 w-64 h-64 bg-[#003942]/5 rounded-full transform translate-x-1/2 -translate-y-1/2"></div>
+                <div
+                    className="absolute bottom-0 left-0 w-96 h-96 bg-[#003942]/5 rounded-full transform -translate-x-1/2 translate-y-1/2"></div>
 
                 <CenteredContainer>
                     <div className="relative flex flex-col items-center justify-center space-y-6 text-center mb-16">
-                        <div className="inline-flex items-center rounded-full bg-[#003942]/10 px-3 py-1.5 text-sm font-semibold text-[#003942]">
-                            <Dumbbell className="mr-2 h-4 w-4" />
+                        <div
+                            className="inline-flex items-center rounded-full bg-[#003942]/10 px-3 py-1.5 text-sm font-semibold text-[#003942]">
+                            <Dumbbell className="mr-2 h-4 w-4"/>
                             Coaching Programs
                         </div>
                         <h2 className="text-3xl md:text-5xl font-bold tracking-tighter text-[#003942]">
                             Choose Your Path to Success
                         </h2>
                         <p className="max-w-[800px] text-[#003942]/70 text-lg">
-                            Select the coaching program that fits your goals, lifestyle, and budget. All programs include personalized
+                            Select the coaching program that fits your goals, lifestyle, and budget. All programs
+                            include personalized
                             attention and proven methods.
                         </p>
                     </div>
@@ -167,20 +176,24 @@ export default function CoachingPage() {
                             ]}
                             accentColor="teal"
                         />
-                        
+
                     </div>
 
                     <div className="mt-16 text-center">
-                        <div className="inline-flex items-center justify-center p-4 bg-white rounded-lg shadow-sm border border-[#003942]/10 mb-6">
-                            <Star className="h-5 w-5 text-yellow-500 mr-2" />
+                        <div
+                            className="inline-flex items-center justify-center p-4 bg-white rounded-lg shadow-sm border border-[#003942]/10 mb-6">
+                            <Star className="h-5 w-5 text-yellow-500 mr-2"/>
                             <p className="text-[#003942] font-medium">
                                 Not sure which plan is right for you? Schedule a free consultation call.
                             </p>
                         </div>
-                        <Button variant="outline" size="lg" className="border-[#003942] text-[#003942] hover:bg-[#003942]/10">
-                            Book Free Consultation
-                            <ChevronRight className="ml-2 h-4 w-4" />
-                        </Button>
+                        <a href={"https://wa.me/+21620491086"}>
+                            <Button variant="outline" size="lg"
+                                    className="border-[#003942] text-[#003942] hover:bg-[#003942]/10">
+                                Contact me via Whatsapp
+                                <ChevronRight className="ml-2 h-4 w-4"/>
+                            </Button>
+                        </a>
                     </div>
                 </CenteredContainer>
             </section>
@@ -239,7 +252,7 @@ export default function CoachingPage() {
                 </CenteredContainer>
             </section>*/}
 
-           
+
             {/* CTA Section */}
             <section className="py-16 bg-[#003942]">
                 <CenteredContainer className="text-center">

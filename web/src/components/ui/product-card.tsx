@@ -14,9 +14,17 @@ interface ProductCardProps {
     price: number
     image: string
     category: string
+    onImageClick?: () => void // Add this prop
 }
 
-export default function ProductCard({ id, name, price, image, category }: ProductCardProps) {
+export default function ProductCard({
+                                        id,
+                                        name,
+                                        price,
+                                        image,
+                                        category,
+                                        onImageClick
+                                    }: ProductCardProps) {
     const { addItem } = useCart()
     const { toast } = useToast()
     const [imageError, setImageError] = useState(false)
@@ -24,7 +32,8 @@ export default function ProductCard({ id, name, price, image, category }: Produc
     // Add a fallback image URL
     const fallbackImage = "/placeholder.svg?height=300&width=300"
 
-    const handleAddToCart = () => {
+    const handleAddToCart = (e: React.MouseEvent) => {
+        e.stopPropagation() // Prevent event from bubbling up
         addItem({
             id,
             name,
@@ -44,9 +53,18 @@ export default function ProductCard({ id, name, price, image, category }: Produc
         setImageError(true)
     }
 
+    const handleImageClick = () => {
+        if (onImageClick) {
+            onImageClick()
+        }
+    }
+
     return (
-        <div className="group overflow-hidden rounded-lg border bg-white shadow-sm transition-all hover:shadow-md">
-            <div className="relative aspect-square overflow-hidden">
+        <div
+            className="group overflow-hidden rounded-lg border bg-white shadow-sm transition-all hover:shadow-md"
+            onClick={handleImageClick} // Whole card click triggers image click
+        >
+            <div className="relative aspect-square overflow-hidden cursor-pointer">
                 <Image
                     src={imageError ? fallbackImage : image}
                     alt={name}
@@ -60,8 +78,12 @@ export default function ProductCard({ id, name, price, image, category }: Produc
                 <div className="text-sm text-[#003942]/70">{category}</div>
                 <h3 className="font-medium text-[#003942]">{name}</h3>
                 <div className="mt-1 flex items-center justify-between">
-                    <span className="font-bold text-[#003942]">${(price / 100).toFixed(2)}</span>
-                    <Button size="sm" className="bg-[#003942] text-[#f4efe8] hover:bg-[#004e5a]" onClick={handleAddToCart}>
+                    <span className="font-bold text-[#003942]">DT {price.toFixed(2)}</span>
+                    <Button
+                        size="sm"
+                        className="bg-[#003942] text-[#f4efe8] hover:bg-[#004e5a]"
+                        onClick={handleAddToCart}
+                    >
                         Add to Cart
                     </Button>
                 </div>

@@ -2,6 +2,8 @@
 /* eslint-disable react/no-unescaped-entities */
 "use client"
 
+import type React from "react"
+
 import { useState, useEffect } from "react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
@@ -10,6 +12,7 @@ import { ShoppingBag, Search, Filter, ChevronRight, ChevronDown, Star, Loader2 }
 import CenteredContainer from "@/layout/centered-container"
 import { useCart } from "@/context/cart-context"
 import { useToast } from "@/components/ui/use-toast"
+import ProductDetailModal from "@/components/ProductDetailsModal"
 
 // Define the Product type based on the API response
 interface Product {
@@ -35,6 +38,8 @@ export default function ShopPage() {
     const [products, setProducts] = useState<Product[]>([])
     const [isLoading, setIsLoading] = useState<boolean>(true)
     const [error, setError] = useState<string | null>(null)
+    const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
+    const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
     const { addItem } = useCart()
     const { toast } = useToast()
 
@@ -112,7 +117,7 @@ export default function ShopPage() {
     // Get the base URL for images
     const getImageUrl = (path: string): string => {
         // If the path is already a full URL, return it as is
-        if (path.startsWith("http")) {
+        if (path?.startsWith("http")) {
             return path
         }
 
@@ -121,11 +126,14 @@ export default function ShopPage() {
     }
 
     // Handle adding item to cart
-    const handleAddToCart = (product: Product) => {
+    const handleAddToCart = (product: Product, event: React.MouseEvent) => {
+        // Stop event propagation to prevent opening the modal when clicking the Add to Cart button
+        event.stopPropagation()
+
         addItem({
             id: product.id.toString(),
             name: product.name,
-            price: product.price / 100, // Convert cents to dollars
+            price: product.price, // Convert cents to dollars
             image: getImageUrl(product.imageUrl),
             category: product.category,
         })
@@ -135,6 +143,17 @@ export default function ShopPage() {
             description: `${product.name} has been added to your cart.`,
             duration: 3000,
         })
+    }
+
+    // Handle product click to open modal
+    const handleProductClick = (product: Product) => {
+        setSelectedProduct(product)
+        setIsModalOpen(true)
+    }
+
+    // Close the modal
+    const handleCloseModal = () => {
+        setIsModalOpen(false)
     }
 
     // Render loading state
@@ -410,7 +429,8 @@ export default function ShopPage() {
                                 {getCurrentProducts().map((product) => (
                                     <div
                                         key={product.id}
-                                        className="group bg-white rounded-lg border border-[#003942]/10 overflow-hidden transition-all hover:shadow-md"
+                                        className="group bg-white rounded-lg border border-[#003942]/10 overflow-hidden transition-all hover:shadow-md cursor-pointer"
+                                        onClick={() => handleProductClick(product)}
                                     >
                                         <div className="relative aspect-square overflow-hidden group">
                                             <Image
@@ -424,34 +444,16 @@ export default function ShopPage() {
                                                     e.currentTarget.src = "/placeholder.svg?height=300&width=300"
                                                 }}
                                             />
-                                            {product.isBestSeller && (
-                                                <div className="absolute top-2 left-2 bg-[#003942] text-white text-xs font-bold px-2 py-1 rounded">
-                                                    BESTSELLER
-                                                </div>
-                                            )}
                                         </div>
                                         <div className="p-4">
                                             <div className="text-sm text-[#003942]/50 mb-1">{product.category}</div>
                                             <h3 className="font-medium text-lg mb-1 text-[#003942]">{product.name}</h3>
-                                            <div className="flex items-center mb-2">
-                                                <div className="flex items-center text-[#003942] mr-2">
-                                                    {[...Array(5)].map((_, i) => (
-                                                        <Star
-                                                            key={i}
-                                                            className={`h-4 w-4 ${i < Math.floor(product.rating || 0) ? "fill-current" : "fill-none"}`}
-                                                        />
-                                                    ))}
-                                                </div>
-                                                <span className="text-sm text-[#003942]/50">
-                          {product.rating || 0} ({product.reviews || 0})
-                        </span>
-                                            </div>
                                             <div className="flex items-center justify-between">
-                                                <span className="font-bold text-lg text-[#003942]">${(product.price / 100).toFixed(2)}</span>
+                                                <span className="font-bold text-lg text-[#003942]">DT {(product.price).toFixed(2)}</span>
                                                 <Button
                                                     size="sm"
                                                     className="bg-[#003942] text-[#f4efe8] hover:bg-[#004e5a]"
-                                                    onClick={() => handleAddToCart(product)}
+                                                    onClick={(e) => handleAddToCart(product, e)}
                                                 >
                                                     Add to Cart
                                                 </Button>
@@ -473,6 +475,14 @@ export default function ShopPage() {
                     </div>
                 </CenteredContainer>
             </section>
+
+            {/* Product Detail Modal */}
+            <ProductDetailModal
+                product={selectedProduct}
+                isOpen={isModalOpen}
+                onClose={handleCloseModal}
+                getImageUrl={getImageUrl}
+            />
         </div>
     )
 }
