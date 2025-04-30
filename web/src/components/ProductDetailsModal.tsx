@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useCart } from "@/context/cart-context"
 import { useToast } from "@/components/ui/use-toast"
 
+
 interface Product {
     id: number
     name: string
@@ -17,9 +18,6 @@ interface Product {
     price: number
     imageUrl: string
     category: string
-    rating: number
-    reviews: number
-    isBestSeller: boolean
     createdAt: string
     updatedAt: string | null
 }
