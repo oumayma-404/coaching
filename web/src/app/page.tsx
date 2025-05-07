@@ -6,6 +6,7 @@ import ResultsSection from "@/components/sections/results-section"
 import CoachingSection from "@/components/sections/coaching-section"
 import ShopSection from "@/components/sections/shop-section"
 import CtaSection from "@/components/sections/cta-section"
+import FaqSection from "@/components/sections/faq-section";
 
 export default function Home() {
     return (
@@ -14,7 +15,8 @@ export default function Home() {
                 <HeroSection/>
                 <ShopSection/>
                 <CoachingSection/>
-                <ResultsSection/>
+                <FaqSection/>
+                {/*<ResultsSection/>*/}
                 <CtaSection/>
             </main>
         </div>
