@@ -122,11 +122,11 @@ export default function CoachingPage() {
             addItem({
                 id: premiumProduct.id.toString(),
                 name: "Premium Plan",
-                price: premiumProduct.price / 100, // Convert cents to dollars if needed
-                image: premiumProduct.imageUrl,
+                price: premiumProduct.price , 
+                imageUrl: premiumProduct.imageUrl,
                 category: "coaching",
+                quantity: 1
             })
-
             toast({
                 title: "Added to cart",
                 description: `Premium Plan has been added to your cart.`,

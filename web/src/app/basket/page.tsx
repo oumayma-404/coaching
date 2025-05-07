@@ -18,10 +18,8 @@ export default function BasketPage() {
 
     // Calculate totals
     const subtotal = items.reduce((total, item) => total + item.price * item.quantity, 0)
-    const discount = promoApplied ? subtotal * 0.1 : 0 // 10% discount
-    const tax = (subtotal - discount) * 0.08 // 8% tax
     const shipping = subtotal > 100 ? 0 : 9.99 // Free shipping over $100
-    const total = subtotal - discount + tax + shipping
+    const total = subtotal   + shipping
 
     // Apply promo code
     const applyPromoCode = () => {
@@ -82,7 +80,7 @@ export default function BasketPage() {
                                                 <div className="flex-grow">
                                                     <h3 className="font-medium text-[#003942]">{item.name}</h3>
                                                     <p className="text-sm text-[#003942]/50">{item.category}</p>
-                                                    <p className="font-bold mt-1 text-[#003942]">${item.price.toFixed(2)}</p>
+                                                    <p className="font-bold mt-1 text-[#003942]">{item.price.toFixed(2)} DT</p>
                                                 </div>
                                                 <div className="flex items-center gap-4">
                                                     <div className="flex items-center">
@@ -149,64 +147,22 @@ export default function BasketPage() {
                                             <span className="text-[#003942]/70">Subtotal</span>
                                             <span className="text-[#003942]">${subtotal.toFixed(2)}</span>
                                         </div>
-
-                                        {promoApplied && (
-                                            <div className="flex justify-between text-sm">
-                                                <span className="text-[#003942]">Discount (10%)</span>
-                                                <span className="text-[#003942]">-${discount.toFixed(2)}</span>
-                                            </div>
-                                        )}
+                                        
 
                                         <div className="flex justify-between text-sm">
                                             <span className="text-[#003942]/70">Shipping</span>
                                             <span
                                                 className="text-[#003942]">{shipping === 0 ? "Free" : `$${shipping.toFixed(2)}`}</span>
                                         </div>
-
-                                        <div className="flex justify-between text-sm">
-                                            <span className="text-[#003942]/70">Tax (8%)</span>
-                                            <span className="text-[#003942]">${tax.toFixed(2)}</span>
-                                        </div>
-
+                                        
                                         <div className="pt-4 border-t border-[#003942]/10">
                                             <div className="flex justify-between font-bold text-[#003942]">
                                                 <span>Total</span>
                                                 <span>${total.toFixed(2)}</span>
                                             </div>
-                                            <p className="text-xs text-[#003942]/50 mt-1">
-                                                {shipping === 0 ? "Includes free shipping" : "Free shipping on orders over $100"}
-                                            </p>
                                         </div>
 
-                                        <div className="pt-4">
-                                            <label htmlFor="promo"
-                                                   className="block text-sm font-medium text-[#003942] mb-2">
-                                                Promo Code
-                                            </label>
-                                            <div className="flex gap-2">
-                                                <Input
-                                                    id="promo"
-                                                    placeholder="Enter code"
-                                                    value={promoCode}
-                                                    onChange={(e) => setPromoCode(e.target.value)}
-                                                    className="flex-grow border-[#003942]/20"
-                                                    disabled={promoApplied}
-                                                />
-                                                <Button
-                                                    onClick={applyPromoCode}
-                                                    variant="outline"
-                                                    disabled={promoApplied || !promoCode}
-                                                    className="border-[#003942]/20 text-[#003942] hover:bg-[#003942]/10"
-                                                >
-                                                    Apply
-                                                </Button>
-                                            </div>
-                                            {promoApplied &&
-                                                <p className="text-xs text-green-600 mt-1">Promo code applied
-                                                    successfully!</p>}
-                                            <p className="text-xs text-[#003942]/50 mt-1">Try "FITCOACH10" for 10%
-                                                off</p>
-                                        </div>
+                                        
                                         <Link href={"/payment"}>
                                             <Button
                                                 className="w-full bg-[#003942] text-[#f4efe8] hover:bg-[#004e5a] mt-6"
