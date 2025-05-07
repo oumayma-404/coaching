@@ -31,7 +31,7 @@ export default function ShopPage() {
     const [searchQuery, setSearchQuery] = useState<string>("")
     const [sortBy, setSortBy] = useState<string>("featured")
     const [showFilters, setShowFilters] = useState<boolean>(false)
-    const [priceRange, setPriceRange] = useState<{ min: number; max: number }>({ min: 0, max: 200 })
+    const [priceRange, setPriceRange] = useState<{ min: number; max: number }>({ min: 0, max: 1000 })
     const [products, setProducts] = useState<Product[]>([])
     const [isLoading, setIsLoading] = useState<boolean>(true)
     const [error, setError] = useState<string | null>(null)
@@ -79,8 +79,8 @@ export default function ShopPage() {
         return productList.filter(
             (product) =>
                 product.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
-                product.price / 100 >= priceRange.min &&
-                product.price / 100 <= priceRange.max,
+                product.price  >= priceRange.min &&
+                product.price  <= priceRange.max,
         )
     }
 
@@ -237,37 +237,27 @@ export default function ShopPage() {
                         {categories.slice(1, 4).map((category, index) => (
                             <div
                                 key={category}
-                                className="relative overflow-hidden rounded-xl shadow-md transition-transform hover:scale-105 cursor-pointer"
+                                className="bg-[#003942] text-white rounded-xl shadow-md transition-all hover:bg-[#004e5a] hover:shadow-lg cursor-pointer p-6 flex flex-col"
                                 onClick={() => setActiveCategory(category)}
                             >
-                                <Image
-                                    src="/placeholder.svg?height=300&width=600"
-                                    alt={category}
-                                    width={600}
-                                    height={300}
-                                    className="w-full h-48 object-cover"
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-[#003942]/70 to-transparent flex items-end">
-                                    <div className="p-6 text-white">
-                                        <h3 className="text-xl font-bold">{category.charAt(0).toUpperCase() + category.slice(1)}</h3>
-                                        <p className="text-sm opacity-90">
-                                            {index === 0
-                                                ? "Fuel your workouts and recovery"
-                                                : index === 1
-                                                    ? "Tools for effective training"
-                                                    : "Perform in comfort and style"}
-                                        </p>
-                                        <div className="mt-2 inline-flex items-center text-[#f4efe8] text-sm">
-                                            Shop Now <ChevronRight className="ml-1 h-4 w-4" />
-                                        </div>
-                                    </div>
+                                <h3 className="text-xl font-bold mb-2">{category.charAt(0).toUpperCase() + category.slice(1)}</h3>
+                                <p className="text-sm text-white/80 mb-4">
+                                    {index === 0
+                                        ? "Fuel your workouts and recovery"
+                                        : index === 1
+                                            ? "Tools for effective training"
+                                            : "Perform in comfort and style"}
+                                </p>
+                                <div className="mt-auto inline-flex items-center text-[#f4efe8] text-sm font-medium">
+                                    Shop Now <ChevronRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
                                 </div>
                             </div>
                         ))}
                     </div>
                 </CenteredContainer>
             </section>
-
+            
+            
             {/* Shop Section */}
             <section className="py-12 bg-[#f4efe8]">
                 <CenteredContainer>
@@ -418,7 +408,7 @@ export default function ShopPage() {
                             </div>
 
                             {/* Products Grid */}
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
                                 {getCurrentProducts().map((product) => (
                                     <div
                                         key={product.id}
@@ -441,11 +431,11 @@ export default function ShopPage() {
                                         <div className="p-4">
                                             <div className="text-sm text-[#003942]/50 mb-1">{product.category}</div>
                                             <h3 className="font-medium text-lg mb-1 text-[#003942]">{product.name}</h3>
-                                            <div className="flex items-center justify-between">
+                                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                                                 <span className="font-bold text-lg text-[#003942]">DT {(product.price).toFixed(2)}</span>
                                                 <Button
                                                     size="sm"
-                                                    className="bg-[#003942] text-[#f4efe8] hover:bg-[#004e5a]"
+                                                    className="w-full sm:w-auto bg-[#003942] text-[#f4efe8] hover:bg-[#004e5a]"
                                                     onClick={(e) => handleAddToCart(product, e)}
                                                 >
                                                     Add to Cart
