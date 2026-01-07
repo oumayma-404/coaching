@@ -10,16 +10,14 @@ namespace api.Controllers;
 public class OrdersController : ControllerBase
 {
     private readonly IOrderService _orderService;
-    private readonly IPaymentService _paymeeService;
     private readonly ILogger<OrdersController> _logger;
 
     public OrdersController(
         IOrderService orderService,
-        ILogger<OrdersController> logger, IPaymentService paymeeService)
+        ILogger<OrdersController> logger)
     {
         _orderService = orderService;
         _logger = logger;
-        _paymeeService = paymeeService;
     }
 
     [HttpPost]
@@ -37,43 +35,30 @@ public class OrdersController : ControllerBase
             {
                 ProductId = item.ProductId,
                 Quantity = item.Quantity,
-                // Price will be set by the service
             }).ToList();
 
-            // Create the order with 'Pending' status
+            // Create the order
             var order = await _orderService.CreateOrderAsync(
                 request.Email,
-                request.Name,
+                request.FirstName,
+                request.LastName,
+                request.Phone,
                 orderItems,
-                request.ShippingAddress,
-                paymentIntentId: Guid.NewGuid().ToString() // or any unique identifier
+                request.ShippingAddress
             );
 
-            // Prepare Paymee payment session request
-            var paymeeRequest = new PaymeeRequest
+            // Return order confirmation
+            return Ok(new
             {
-                Amount = order.Total,
-                Note = $"Order #{order.Id}",
-                FirstName = request.Name.Split(" ")[0],
-                LastName = request.Name.Split(" ").Length > 1 ? request.Name.Split(" ")[1] : "",
-                Email = request.Email,
-                Phone = request.Phone,
-                ReturnUrl = "https://yourdomain.com/payment-success",
-                CancelUrl = "https://yourdomain.com/payment-cancelled",
-                WebhookUrl = "https://coaching-z16f.onrender.com/api/paymee/webhook",
-                OrderId = order.Id.ToString()
-            };
-
-            // Get Paymee payment link
-            var paymentUrl = await _paymeeService.CreatePaymentSessionAsync(paymeeRequest);
-
-            // Return order ID and payment link
-            return Ok(new { orderId = order.Id, paymentUrl });
+                success = true,
+                orderId = order.Id,
+                message = "Order placed successfully! You will receive a confirmation email shortly."
+            });
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error creating order and generating payment session");
-            return StatusCode(500, ex.Message);
+            _logger.LogError(ex, "Error creating order");
+            return StatusCode(500, new { success = false, message = ex.Message });
         }
     }
 
@@ -122,11 +107,12 @@ public class OrdersController : ControllerBase
 // DTO classes
 public class OrderRequest
 {
-    public string Email { get; set; }
-    public string Name { get; set; }
-    public string Phone { get; set; }
-    public List<OrderItemRequest> Items { get; set; }
-    public string ShippingAddress { get; set; }
+    public string Email { get; set; } = string.Empty;
+    public string FirstName { get; set; } = string.Empty;
+    public string LastName { get; set; } = string.Empty;
+    public string Phone { get; set; } = string.Empty;
+    public List<OrderItemRequest> Items { get; set; } = new();
+    public string ShippingAddress { get; set; } = string.Empty;
 }
 
 public class OrderItemRequest

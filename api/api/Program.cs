@@ -7,49 +7,56 @@ using api.Services;
 using DotNetEnv;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 Env.Load();
 
-// Now you can access the environment variables
+// Build connection string from environment variables OR fallback to appsettings.json
+string connectionString;
+
 var dbHost = Environment.GetEnvironmentVariable("DB_HOST");
-var dbPort = Environment.GetEnvironmentVariable("DB_PORT");
-var dbUsername = Environment.GetEnvironmentVariable("DB_USERNAME");
-var dbPassword = Environment.GetEnvironmentVariable("DB_PASSWORD");
-var dbName = Environment.GetEnvironmentVariable("DB_DATABASE");
-
-
-
-var connectionString = $"Host={dbHost};Port={dbPort};Username={dbUsername};Password={dbPassword};Database={dbName}";
+if (!string.IsNullOrEmpty(dbHost))
+{
+    // Use environment variables (Docker/Production)
+    var dbPort = Environment.GetEnvironmentVariable("DB_PORT") ?? "5432";
+    var dbUsername = Environment.GetEnvironmentVariable("DB_USERNAME") ?? "postgres";
+    var dbPassword = Environment.GetEnvironmentVariable("DB_PASSWORD") ?? "postgres";
+    var dbName = Environment.GetEnvironmentVariable("DB_DATABASE") ?? "sportscoach";
+    
+    connectionString = $"Host={dbHost};Port={dbPort};Username={dbUsername};Password={dbPassword};Database={dbName}";
+}
+else
+{
+    // Fallback to appsettings.json (Local development)
+    connectionString = builder.Configuration.GetConnectionString("PostgreSQLConnection") 
+        ?? throw new InvalidOperationException("No database connection string configured. Set DB_HOST environment variable or add ConnectionStrings:PostgreSQLConnection to appsettings.json");
+}
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString)
         .EnableSensitiveDataLogging()
         .LogTo(Console.WriteLine, LogLevel.Information));
-    
 
 
-builder.Services.AddHttpClient(); // 👈 This registers IHttpClientFactory
+builder.Services.AddHttpClient(); // For external API calls (Email)
 
-// Register services (same as before)
+// Register services
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
-builder.Services.AddScoped<IPaymentService, PaymeeService>();
 builder.Services.AddSingleton<CloudinaryService>();
-
-//builder.Services.AddScoped<IPaymentService, StripePaymentService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
     options.SupportNonNullableReferenceTypes();
-    options.OperationFilter<FileUploadOperationFilter>(); // 👈 Add this line
+    options.OperationFilter<FileUploadOperationFilter>();
 });
 builder.Services.AddCors(options =>
 {
@@ -63,7 +70,7 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-app.UseCors("AllowAll"); //
+app.UseCors("AllowAll");
 
 
 // Apply migrations automatically (for development)

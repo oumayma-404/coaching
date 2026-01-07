@@ -1,10 +1,10 @@
 import type { NextConfig } from "next";
 
 /** @type {import('next').NextConfig} */
-const nextConfig = {
+const nextConfig: NextConfig = {
+    output: 'standalone', // Required for Docker deployment
     images: {
         domains: ['res.cloudinary.com'],
-
         remotePatterns: [
             {
                 protocol: 'https',
@@ -19,4 +19,5 @@ const nextConfig = {
         ],
     },
 }
+
 export default nextConfig;

@@ -1,0 +1,13 @@
+bin/
+obj/
+.git
+.gitignore
+*.md
+.env*
+!.env.example
+Dockerfile
+.dockerignore
+*.user
+*.suo
+.vs/
+

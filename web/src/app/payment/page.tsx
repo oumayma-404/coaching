@@ -1,114 +1,99 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable react/no-unescaped-entities */
 "use client"
 
 import type React from "react"
-
 import { useState, useEffect } from "react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
 import { useCart } from "@/context/cart-context"
-import { CheckCircle, ArrowLeft, ShieldCheck, Lock } from "lucide-react"
+import { CheckCircle, ArrowLeft, ShoppingBag, Loader2, Package, Phone, Mail, MapPin, User } from "lucide-react"
 import CenteredContainer from "@/layout/centered-container"
 import { useToast } from "@/components/ui/use-toast"
 
 interface UserInfo {
-    first_name: string
-    last_name: string
+    firstName: string
+    lastName: string
     email: string
     phone: string
     address: string
-    city: string
-    state: string
-    postal_code: string
-    country: string
 }
 
-export default function PaymentPage() {
+interface FormErrors {
+    firstName?: string
+    lastName?: string
+    email?: string
+    phone?: string
+    address?: string
+}
+
+export default function CheckoutPage() {
     const router = useRouter()
     const { items, clearCart } = useCart()
     const { toast } = useToast()
     const [isProcessing, setIsProcessing] = useState(false)
-    const [isComplete, setIsComplete] = useState(false)
+    const [orderComplete, setOrderComplete] = useState(false)
+    const [orderId, setOrderId] = useState<number | null>(null)
     const [userInfo, setUserInfo] = useState<UserInfo>({
-        first_name: "",
-        last_name: "",
+        firstName: "",
+        lastName: "",
         email: "",
         phone: "",
         address: "",
-        city: "",
-        state: "",
-        postal_code: "",
-        country: "",
     })
-    const [errors, setErrors] = useState<Partial<UserInfo>>({})
+    const [errors, setErrors] = useState<FormErrors>({})
 
     // Calculate totals
     const subtotal = items.reduce((total, item) => total + item.price * item.quantity, 0)
-    const tax = subtotal * 0.08 // 8% tax
-    const shipping = subtotal > 100 ? 0 : 9.99 // Free shipping over $100
-    const total = subtotal + tax + shipping
+    const shipping = subtotal > 100 ? 0 : 7 // Free shipping over 100 DT
+    const total = subtotal + shipping
 
-    // Redirect if cart is empty
+    // Redirect if cart is empty and order is not complete
     useEffect(() => {
-        if (items.length === 0 && !isComplete) {
+        if (items.length === 0 && !orderComplete) {
             router.push("/shop")
         }
-    }, [items.length, router, isComplete])
+    }, [items.length, router, orderComplete])
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target
         setUserInfo((prev) => ({ ...prev, [name]: value }))
 
         // Clear error when user types
-        if (errors[name as keyof UserInfo]) {
+        if (errors[name as keyof FormErrors]) {
             setErrors((prev) => ({ ...prev, [name]: undefined }))
         }
     }
 
     const validateForm = (): boolean => {
-        const newErrors: Partial<UserInfo> = {}
+        const newErrors: FormErrors = {}
 
-        if (!userInfo.first_name.trim()) {
-            newErrors.first_name = "First name is required"
+        if (!userInfo.firstName.trim()) {
+            newErrors.firstName = "First name is required"
         }
 
-        if (!userInfo.last_name.trim()) {
-            newErrors.last_name = "Last name is required"
+        if (!userInfo.lastName.trim()) {
+            newErrors.lastName = "Last name is required"
         }
 
         if (!userInfo.email.trim()) {
             newErrors.email = "Email is required"
         } else if (!/\S+@\S+\.\S+/.test(userInfo.email)) {
-            newErrors.email = "Email is invalid"
+            newErrors.email = "Please enter a valid email"
         }
 
         if (!userInfo.phone.trim()) {
             newErrors.phone = "Phone number is required"
-        } else if (!/^\+?[0-9]{10,15}$/.test(userInfo.phone.replace(/\s/g, ""))) {
-            newErrors.phone = "Phone number is invalid"
+        } else if (!/^[+]?[0-9\s-]{8,15}$/.test(userInfo.phone.replace(/\s/g, ""))) {
+            newErrors.phone = "Please enter a valid phone number"
         }
 
         if (!userInfo.address.trim()) {
-            newErrors.address = "Street address is required"
-        }
-
-        if (!userInfo.city.trim()) {
-            newErrors.city = "City is required"
-        }
-
-        if (!userInfo.state.trim()) {
-            newErrors.state = "State/Province is required"
-        }
-
-        if (!userInfo.postal_code.trim()) {
-            newErrors.postal_code = "Postal/ZIP code is required"
-        }
-
-        if (!userInfo.country.trim()) {
-            newErrors.country = "Country is required"
+            newErrors.address = "Delivery address is required"
+        } else if (userInfo.address.trim().length < 10) {
+            newErrors.address = "Please provide a complete address"
         }
 
         setErrors(newErrors)
@@ -119,31 +104,29 @@ export default function PaymentPage() {
         e.preventDefault()
 
         if (!validateForm()) {
+            toast({
+                title: "Please check your information",
+                description: "Some fields need your attention.",
+                variant: "destructive",
+            })
             return
         }
 
         setIsProcessing(true)
 
         try {
-            // Format the shipping address as a single string
-            const formattedAddress = `${userInfo.address}, ${userInfo.city}, ${userInfo.state} ${userInfo.postal_code}, ${userInfo.country}`
-
-            // Format the name (combine first and last name)
-            const fullName = `${userInfo.first_name} ${userInfo.last_name}`
-
-            // Prepare the order request payload
             const orderRequest = {
                 email: userInfo.email,
-                name: fullName,
+                firstName: userInfo.firstName,
+                lastName: userInfo.lastName,
                 phone: userInfo.phone,
-                shippingAddress: formattedAddress,
+                shippingAddress: userInfo.address,
                 items: items.map((item) => ({
-                    productId: Number.parseInt(item.id), // Convert string ID to number
+                    productId: Number.parseInt(item.id),
                     quantity: item.quantity,
                 })),
             }
 
-            // Make the API call to create the order
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/Orders`, {
                 method: "POST",
                 headers: {
@@ -152,73 +135,107 @@ export default function PaymentPage() {
                 body: JSON.stringify(orderRequest),
             })
 
-            if (!response.ok) {
-                const errorData = await response.json()
-                throw new Error(errorData.message || "Failed to create order")
+            const data = await response.json()
+
+            if (!response.ok || !data.success) {
+                throw new Error(data.message || "Failed to place order")
             }
 
-            // Get the order ID and payment URL from the response
-            const { orderId, paymentUrl } = await response.json()
-
-            // Store the order ID in localStorage for reference (optional)
-            localStorage.setItem("lastOrderId", orderId.toString())
-
-            // Show toast notification before redirecting
-            toast({
-                title: "Redirecting to payment",
-                description: "You will be redirected to complete your payment.",
-                duration: 2000,
-            })
-
-            // Clear the cart after successful order creation
+            // Order successful
+            setOrderId(data.orderId)
+            setOrderComplete(true)
             clearCart()
 
-            // Short delay before redirecting to payment URL
-            setTimeout(() => {
-                window.location.href = paymentUrl
-            }, 1500)
+            toast({
+                title: "Order Placed Successfully! 🎉",
+                description: "You will receive a confirmation email shortly.",
+            })
         } catch (error) {
-            console.error("Error creating order:", error)
-
+            console.error("Error placing order:", error)
             toast({
                 title: "Error",
-                description: error instanceof Error ? error.message : "Failed to process your order. Please try again.",
+                description: error instanceof Error ? error.message : "Failed to place your order. Please try again.",
                 variant: "destructive",
-                duration: 5000,
             })
-
+        } finally {
             setIsProcessing(false)
         }
     }
 
-    if (isComplete) {
+    // Order Complete View
+    if (orderComplete) {
         return (
             <div className="min-h-screen bg-[#f4efe8] py-12">
                 <CenteredContainer>
-                    <div className="max-w-2xl mx-auto bg-white rounded-xl shadow-md overflow-hidden">
-                        <div className="p-8 text-center">
-                            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <CheckCircle className="h-10 w-10 text-green-600" />
+                    <div className="max-w-2xl mx-auto">
+                        <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+                            {/* Success Header */}
+                            <div className="bg-gradient-to-r from-[#003942] to-[#004e5a] p-8 text-center">
+                                <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <CheckCircle className="h-12 w-12 text-white" />
+                                </div>
+                                <h1 className="text-3xl font-bold text-white mb-2">Order Confirmed!</h1>
+                                <p className="text-white/80">Thank you for your purchase</p>
                             </div>
-                            <h1 className="text-2xl font-bold text-[#003942] mb-2">Payment Successful!</h1>
-                            <p className="text-[#003942]/70 mb-6">
-                                Thank you for your purchase. Your order has been placed successfully.
-                            </p>
-                            <div className="bg-[#f4efe8] rounded-lg p-4 mb-6">
-                                <p className="font-medium text-[#003942]">Order Total: ${total.toFixed(2)}</p>
-                                <p className="text-sm text-[#003942]/70">A confirmation email has been sent to {userInfo.email}</p>
-                            </div>
-                            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                                <Button
-                                    variant="outline"
-                                    className="border-[#003942] text-[#003942] hover:bg-[#003942]/10"
-                                    onClick={() => router.push("/")}
-                                >
-                                    Return to Home
-                                </Button>
-                                <Button className="bg-[#003942] text-[#f4efe8] hover:bg-[#004e5a]" onClick={() => router.push("/shop")}>
-                                    Continue Shopping
-                                </Button>
+
+                            {/* Order Details */}
+                            <div className="p-8">
+                                <div className="bg-[#f4efe8] rounded-xl p-6 mb-6">
+                                    <div className="flex items-center justify-between mb-4">
+                                        <span className="text-[#003942]/70">Order Number</span>
+                                        <span className="font-bold text-[#003942] text-xl">#{orderId}</span>
+                                    </div>
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-[#003942]/70">Total Amount</span>
+                                        <span className="font-bold text-[#003942] text-xl">{total.toFixed(2)} DT</span>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-4 mb-8">
+                                    <div className="flex items-start gap-3">
+                                        <Mail className="h-5 w-5 text-[#003942] mt-0.5" />
+                                        <div>
+                                            <p className="font-medium text-[#003942]">Confirmation Email Sent</p>
+                                            <p className="text-sm text-[#003942]/70">
+                                                We&apos;ve sent order details to {userInfo.email}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-start gap-3">
+                                        <Phone className="h-5 w-5 text-[#003942] mt-0.5" />
+                                        <div>
+                                            <p className="font-medium text-[#003942]">We&apos;ll Contact You</p>
+                                            <p className="text-sm text-[#003942]/70">
+                                                Our delivery team will call you at {userInfo.phone} to confirm delivery
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-start gap-3">
+                                        <Package className="h-5 w-5 text-[#003942] mt-0.5" />
+                                        <div>
+                                            <p className="font-medium text-[#003942]">Payment on Delivery</p>
+                                            <p className="text-sm text-[#003942]/70">
+                                                Please have {total.toFixed(2)} DT ready when your order arrives
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="flex flex-col sm:flex-row gap-4">
+                                    <Button
+                                        variant="outline"
+                                        className="flex-1 border-[#003942] text-[#003942] hover:bg-[#003942]/10"
+                                        onClick={() => router.push("/")}
+                                    >
+                                        Return to Home
+                                    </Button>
+                                    <Button
+                                        className="flex-1 bg-[#003942] text-[#f4efe8] hover:bg-[#004e5a]"
+                                        onClick={() => router.push("/shop")}
+                                    >
+                                        Continue Shopping
+                                    </Button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -228,266 +245,268 @@ export default function PaymentPage() {
     }
 
     return (
-        <div className="min-h-screen bg-[#f4efe8] py-12">
-            <CenteredContainer>
-                <div className="mb-6">
-                    <button
-                        onClick={() => router.back()}
-                        className="inline-flex items-center text-[#003942]/70 hover:text-[#003942] transition-colors"
-                    >
-                        <ArrowLeft className="mr-2 h-4 w-4" />
-                        Back to Cart
-                    </button>
-                </div>
-
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    {/* Order Summary */}
-                    <div className="lg:col-span-1 order-2 lg:order-1">
-                        <div className="bg-white rounded-xl shadow-sm overflow-hidden sticky top-4">
-                            <div className="p-6 border-b border-[#003942]/10">
-                                <h2 className="text-xl font-bold text-[#003942]">Order Summary</h2>
-                            </div>
-
-                            <div className="p-6">
-                                <div className="space-y-4 max-h-[400px] overflow-y-auto mb-6">
-                                    {items.map((item) => (
-                                        <div key={item.id} className="flex gap-4">
-                                            <div className="h-16 w-16 rounded-md overflow-hidden bg-[#f4efe8] flex-shrink-0">
-                                                <Image
-                                                    src={item.imageUrl || "/placeholder.svg"}
-                                                    alt={item.name}
-                                                    width={64}
-                                                    height={64}
-                                                    className="h-full w-full object-cover"
-                                                />
-                                            </div>
-                                            <div className="flex-grow">
-                                                <h3 className="font-medium text-sm text-[#003942]">{item.name}</h3>
-                                                <p className="text-xs text-[#003942]/50">{item.category}</p>
-                                                <div className="flex justify-between mt-1">
-                                                    <p className="text-sm text-[#003942]/70">Qty: {item.quantity}</p>
-                                                    <p className="font-medium text-sm text-[#003942]">
-                                                        ${(item.price * item.quantity).toFixed(2)}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-
-                                <div className="space-y-2 pt-4 border-t border-[#003942]/10">
-                                    <div className="flex justify-between text-sm">
-                                        <span className="text-[#003942]/70">Subtotal</span>
-                                        <span className="text-[#003942]">${subtotal.toFixed(2)}</span>
-                                    </div>
-                                    <div className="flex justify-between text-sm">
-                                        <span className="text-[#003942]/70">Shipping</span>
-                                        <span className="text-[#003942]">{shipping === 0 ? "Free" : `$${shipping.toFixed(2)}`}</span>
-                                    </div>
-                                    <div className="flex justify-between text-sm">
-                                        <span className="text-[#003942]/70">Tax (8%)</span>
-                                        <span className="text-[#003942]">${tax.toFixed(2)}</span>
-                                    </div>
-                                    <div className="flex justify-between font-bold text-[#003942] pt-2 border-t border-[#003942]/10 mt-2">
-                                        <span>Total</span>
-                                        <span>${total.toFixed(2)}</span>
-                                    </div>
-                                </div>
-
-                                <div className="mt-6 flex items-center justify-center text-xs text-[#003942]/50">
-                                    <Lock className="h-3 w-3 mr-1" />
-                                    Secure Checkout
-                                </div>
-                            </div>
+        <div className="min-h-screen bg-[#f4efe8]">
+            {/* Header */}
+            <section className="w-full py-8 bg-white border-b border-[#003942]/10">
+                <CenteredContainer>
+                    <div className="flex items-center justify-between">
+                        <button
+                            onClick={() => router.back()}
+                            className="inline-flex items-center text-[#003942]/70 hover:text-[#003942] transition-colors"
+                        >
+                            <ArrowLeft className="mr-2 h-4 w-4" />
+                            Back to Cart
+                        </button>
+                        <div className="flex items-center gap-2 text-[#003942]">
+                            <ShoppingBag className="h-5 w-5" />
+                            <span className="font-medium">Checkout</span>
                         </div>
                     </div>
+                </CenteredContainer>
+            </section>
 
-                    {/* Payment Form */}
-                    <div className="lg:col-span-2 order-1 lg:order-2">
-                        <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-                            <div className="p-6 border-b border-[#003942]/10">
-                                <h2 className="text-xl font-bold text-[#003942]">Payment Details</h2>
-                            </div>
-
-                            <form onSubmit={handleSubmit} className="p-6 space-y-6">
-                                <div className="space-y-4">
-                                    <h3 className="font-medium text-[#003942]">Personal Information</h3>
-
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                        <div>
-                                            <label htmlFor="first_name" className="block text-sm font-medium text-[#003942] mb-1">
-                                                First Name *
-                                            </label>
-                                            <Input
-                                                id="first_name"
-                                                name="first_name"
-                                                value={userInfo.first_name}
-                                                onChange={handleInputChange}
-                                                className={`border-[#003942]/20 ${errors.first_name ? "border-red-500" : ""}`}
-                                                disabled={isProcessing}
-                                            />
-                                            {errors.first_name && <p className="mt-1 text-xs text-red-500">{errors.first_name}</p>}
-                                        </div>
-
-                                        <div>
-                                            <label htmlFor="last_name" className="block text-sm font-medium text-[#003942] mb-1">
-                                                Last Name *
-                                            </label>
-                                            <Input
-                                                id="last_name"
-                                                name="last_name"
-                                                value={userInfo.last_name}
-                                                onChange={handleInputChange}
-                                                className={`border-[#003942]/20 ${errors.last_name ? "border-red-500" : ""}`}
-                                                disabled={isProcessing}
-                                            />
-                                            {errors.last_name && <p className="mt-1 text-xs text-red-500">{errors.last_name}</p>}
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <label htmlFor="email" className="block text-sm font-medium text-[#003942] mb-1">
-                                            Email Address *
-                                        </label>
-                                        <Input
-                                            id="email"
-                                            name="email"
-                                            type="email"
-                                            value={userInfo.email}
-                                            onChange={handleInputChange}
-                                            className={`border-[#003942]/20 ${errors.email ? "border-red-500" : ""}`}
-                                            disabled={isProcessing}
-                                        />
-                                        {errors.email && <p className="mt-1 text-xs text-red-500">{errors.email}</p>}
-                                    </div>
-
-                                    <div>
-                                        <label htmlFor="phone" className="block text-sm font-medium text-[#003942] mb-1">
-                                            Phone Number *
-                                        </label>
-                                        <Input
-                                            id="phone"
-                                            name="phone"
-                                            value={userInfo.phone}
-                                            onChange={handleInputChange}
-                                            placeholder="+1 (123) 456-7890"
-                                            className={`border-[#003942]/20 ${errors.phone ? "border-red-500" : ""}`}
-                                            disabled={isProcessing}
-                                        />
-                                        {errors.phone && <p className="mt-1 text-xs text-red-500">{errors.phone}</p>}
-                                    </div>
+            {/* Main Content */}
+            <section className="py-8">
+                <CenteredContainer>
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        {/* Checkout Form */}
+                        <div className="lg:col-span-2">
+                            <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+                                <div className="p-6 border-b border-[#003942]/10">
+                                    <h2 className="text-xl font-bold text-[#003942]">Delivery Information</h2>
+                                    <p className="text-sm text-[#003942]/60 mt-1">
+                                        Fill in your details to complete your order
+                                    </p>
                                 </div>
 
-                                <div className="space-y-4">
-                                    <h3 className="font-medium text-[#003942]">Shipping Address</h3>
-
+                                <form onSubmit={handleSubmit} className="p-6 space-y-6">
+                                    {/* Personal Info */}
                                     <div className="space-y-4">
+                                        <div className="flex items-center gap-2 text-[#003942]">
+                                            <User className="h-4 w-4" />
+                                            <h3 className="font-medium">Personal Information</h3>
+                                        </div>
+
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                            <div>
+                                                <label htmlFor="firstName" className="block text-sm font-medium text-[#003942] mb-1">
+                                                    First Name *
+                                                </label>
+                                                <Input
+                                                    id="firstName"
+                                                    name="firstName"
+                                                    value={userInfo.firstName}
+                                                    onChange={handleInputChange}
+                                                    placeholder="Ahmed"
+                                                    className={`border-[#003942]/20 focus:border-[#003942] ${errors.firstName ? "border-red-500" : ""}`}
+                                                    disabled={isProcessing}
+                                                />
+                                                {errors.firstName && <p className="mt-1 text-xs text-red-500">{errors.firstName}</p>}
+                                            </div>
+
+                                            <div>
+                                                <label htmlFor="lastName" className="block text-sm font-medium text-[#003942] mb-1">
+                                                    Last Name *
+                                                </label>
+                                                <Input
+                                                    id="lastName"
+                                                    name="lastName"
+                                                    value={userInfo.lastName}
+                                                    onChange={handleInputChange}
+                                                    placeholder="Ben Ali"
+                                                    className={`border-[#003942]/20 focus:border-[#003942] ${errors.lastName ? "border-red-500" : ""}`}
+                                                    disabled={isProcessing}
+                                                />
+                                                {errors.lastName && <p className="mt-1 text-xs text-red-500">{errors.lastName}</p>}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Contact Info */}
+                                    <div className="space-y-4">
+                                        <div className="flex items-center gap-2 text-[#003942]">
+                                            <Phone className="h-4 w-4" />
+                                            <h3 className="font-medium">Contact Information</h3>
+                                        </div>
+
                                         <div>
-                                            <label htmlFor="address" className="block text-sm font-medium text-[#003942] mb-1">
-                                                Street Address *
+                                            <label htmlFor="email" className="block text-sm font-medium text-[#003942] mb-1">
+                                                Email Address *
                                             </label>
                                             <Input
+                                                id="email"
+                                                name="email"
+                                                type="email"
+                                                value={userInfo.email}
+                                                onChange={handleInputChange}
+                                                placeholder="ahmed@example.com"
+                                                className={`border-[#003942]/20 focus:border-[#003942] ${errors.email ? "border-red-500" : ""}`}
+                                                disabled={isProcessing}
+                                            />
+                                            {errors.email && <p className="mt-1 text-xs text-red-500">{errors.email}</p>}
+                                        </div>
+
+                                        <div>
+                                            <label htmlFor="phone" className="block text-sm font-medium text-[#003942] mb-1">
+                                                Phone Number *
+                                            </label>
+                                            <Input
+                                                id="phone"
+                                                name="phone"
+                                                value={userInfo.phone}
+                                                onChange={handleInputChange}
+                                                placeholder="+216 XX XXX XXX"
+                                                className={`border-[#003942]/20 focus:border-[#003942] ${errors.phone ? "border-red-500" : ""}`}
+                                                disabled={isProcessing}
+                                            />
+                                            {errors.phone && <p className="mt-1 text-xs text-red-500">{errors.phone}</p>}
+                                            <p className="mt-1 text-xs text-[#003942]/50">
+                                                We&apos;ll contact you to confirm delivery
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    {/* Delivery Address */}
+                                    <div className="space-y-4">
+                                        <div className="flex items-center gap-2 text-[#003942]">
+                                            <MapPin className="h-4 w-4" />
+                                            <h3 className="font-medium">Delivery Address</h3>
+                                        </div>
+
+                                        <div>
+                                            <label htmlFor="address" className="block text-sm font-medium text-[#003942] mb-1">
+                                                Full Address *
+                                            </label>
+                                            <Textarea
                                                 id="address"
                                                 name="address"
-                                                value={userInfo.address || ""}
+                                                value={userInfo.address}
                                                 onChange={handleInputChange}
-                                                className={`border-[#003942]/20 ${errors.address ? "border-red-500" : ""}`}
+                                                placeholder="Street, Building, City, Governorate..."
+                                                rows={3}
+                                                className={`border-[#003942]/20 focus:border-[#003942] resize-none ${errors.address ? "border-red-500" : ""}`}
                                                 disabled={isProcessing}
                                             />
                                             {errors.address && <p className="mt-1 text-xs text-red-500">{errors.address}</p>}
                                         </div>
+                                    </div>
 
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                            <div>
-                                                <label htmlFor="city" className="block text-sm font-medium text-[#003942] mb-1">
-                                                    City *
-                                                </label>
-                                                <Input
-                                                    id="city"
-                                                    name="city"
-                                                    value={userInfo.city || ""}
-                                                    onChange={handleInputChange}
-                                                    className={`border-[#003942]/20 ${errors.city ? "border-red-500" : ""}`}
-                                                    disabled={isProcessing}
-                                                />
-                                                {errors.city && <p className="mt-1 text-xs text-red-500">{errors.city}</p>}
+                                    {/* Payment Info */}
+                                    <div className="bg-[#f4efe8] rounded-xl p-4">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 bg-[#003942] rounded-full flex items-center justify-center">
+                                                <Package className="h-5 w-5 text-white" />
                                             </div>
-
                                             <div>
-                                                <label htmlFor="state" className="block text-sm font-medium text-[#003942] mb-1">
-                                                    State/Province *
-                                                </label>
-                                                <Input
-                                                    id="state"
-                                                    name="state"
-                                                    value={userInfo.state || ""}
-                                                    onChange={handleInputChange}
-                                                    className={`border-[#003942]/20 ${errors.state ? "border-red-500" : ""}`}
-                                                    disabled={isProcessing}
-                                                />
-                                                {errors.state && <p className="mt-1 text-xs text-red-500">{errors.state}</p>}
-                                            </div>
-                                        </div>
-
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                            <div>
-                                                <label htmlFor="postal_code" className="block text-sm font-medium text-[#003942] mb-1">
-                                                    Postal/ZIP Code *
-                                                </label>
-                                                <Input
-                                                    id="postal_code"
-                                                    name="postal_code"
-                                                    value={userInfo.postal_code || ""}
-                                                    onChange={handleInputChange}
-                                                    className={`border-[#003942]/20 ${errors.postal_code ? "border-red-500" : ""}`}
-                                                    disabled={isProcessing}
-                                                />
-                                                {errors.postal_code && <p className="mt-1 text-xs text-red-500">{errors.postal_code}</p>}
-                                            </div>
-
-                                            <div>
-                                                <label htmlFor="country" className="block text-sm font-medium text-[#003942] mb-1">
-                                                    Country *
-                                                </label>
-                                                <Input
-                                                    id="country"
-                                                    name="country"
-                                                    value={userInfo.country || ""}
-                                                    onChange={handleInputChange}
-                                                    className={`border-[#003942]/20 ${errors.country ? "border-red-500" : ""}`}
-                                                    disabled={isProcessing}
-                                                />
-                                                {errors.country && <p className="mt-1 text-xs text-red-500">{errors.country}</p>}
+                                                <p className="font-medium text-[#003942]">Payment on Delivery</p>
+                                                <p className="text-sm text-[#003942]/70">
+                                                    Pay when your order arrives
+                                                </p>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
 
-                                <div className="pt-4 border-t border-[#003942]/10">
-                                    <div className="flex items-center mb-4">
-                                        <ShieldCheck className="h-5 w-5 text-green-600 mr-2" />
-                                        <p className="text-sm text-[#003942]/70">
-                                            You will be redirected to our secure payment processor to complete your purchase.
-                                        </p>
-                                    </div>
-
+                                    {/* Submit Button */}
                                     <Button
                                         type="submit"
-                                        className="w-full bg-[#003942] text-[#f4efe8] hover:bg-[#004e5a] py-6"
+                                        className="w-full bg-[#003942] text-[#f4efe8] hover:bg-[#004e5a] py-6 text-lg"
                                         disabled={isProcessing}
                                     >
-                                        {isProcessing ? "Processing..." : "Proceed to Payment"}
+                                        {isProcessing ? (
+                                            <>
+                                                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                                                Placing Order...
+                                            </>
+                                        ) : (
+                                            <>Place Order - {total.toFixed(2)} DT</>
+                                        )}
                                     </Button>
 
-                                    <p className="text-xs text-center text-[#003942]/50 mt-4">
-                                        By clicking the button above, you agree to our Terms of Service and Privacy Policy.
+                                    <p className="text-xs text-center text-[#003942]/50">
+                                        By placing your order, you agree to our Terms of Service
                                     </p>
+                                </form>
+                            </div>
+                        </div>
+
+                        {/* Order Summary Sidebar */}
+                        <div className="lg:col-span-1">
+                            <div className="bg-white rounded-2xl shadow-sm overflow-hidden sticky top-4">
+                                <div className="p-6 border-b border-[#003942]/10">
+                                    <h2 className="text-xl font-bold text-[#003942]">Order Summary</h2>
+                                    <p className="text-sm text-[#003942]/60">{items.length} item{items.length > 1 ? "s" : ""}</p>
                                 </div>
-                            </form>
+
+                                <div className="p-6">
+                                    {/* Items */}
+                                    <div className="space-y-4 max-h-[300px] overflow-y-auto mb-6">
+                                        {items.map((item) => (
+                                            <div key={item.id} className="flex gap-3">
+                                                <div className="h-16 w-16 rounded-lg overflow-hidden bg-[#f4efe8] flex-shrink-0">
+                                                    <Image
+                                                        src={item.imageUrl || "/placeholder.svg"}
+                                                        alt={item.name}
+                                                        width={64}
+                                                        height={64}
+                                                        className="h-full w-full object-cover"
+                                                    />
+                                                </div>
+                                                <div className="flex-grow min-w-0">
+                                                    <h3 className="font-medium text-sm text-[#003942] truncate">{item.name}</h3>
+                                                    <p className="text-xs text-[#003942]/50">{item.category}</p>
+                                                    <div className="flex justify-between mt-1">
+                                                        <span className="text-sm text-[#003942]/70">×{item.quantity}</span>
+                                                        <span className="font-medium text-sm text-[#003942]">
+                                                            {(item.price * item.quantity).toFixed(2)} DT
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    {/* Totals */}
+                                    <div className="space-y-3 pt-4 border-t border-[#003942]/10">
+                                        <div className="flex justify-between text-sm">
+                                            <span className="text-[#003942]/70">Subtotal</span>
+                                            <span className="text-[#003942]">{subtotal.toFixed(2)} DT</span>
+                                        </div>
+                                        <div className="flex justify-between text-sm">
+                                            <span className="text-[#003942]/70">Delivery</span>
+                                            <span className="text-[#003942]">
+                                                {shipping === 0 ? (
+                                                    <span className="text-green-600">Free</span>
+                                                ) : (
+                                                    `${shipping.toFixed(2)} DT`
+                                                )}
+                                            </span>
+                                        </div>
+                                        {shipping > 0 && (
+                                            <p className="text-xs text-[#003942]/50">
+                                                Free delivery on orders over 100 DT
+                                            </p>
+                                        )}
+                                        <div className="flex justify-between font-bold text-[#003942] pt-3 border-t border-[#003942]/10">
+                                            <span>Total</span>
+                                            <span className="text-xl">{total.toFixed(2)} DT</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Back to Cart Link */}
+                            <div className="mt-4 text-center">
+                                <Link
+                                    href="/basket"
+                                    className="text-sm text-[#003942]/70 hover:text-[#003942] transition-colors"
+                                >
+                                    ← Edit Cart
+                                </Link>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </CenteredContainer>
+                </CenteredContainer>
+            </section>
         </div>
     )
 }

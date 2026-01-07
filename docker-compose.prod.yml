@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:16-alpine
+    container_name: coaching-db
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE:-sportscoach}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-postgres} -d ${DB_DATABASE:-sportscoach}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - coaching-network
+
+  # .NET API
+  api:
+    image: ${DOCKERHUB_USERNAME}/coaching-api:latest
+    container_name: coaching-api
+    restart: always
+    ports:
+      - "5000:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USERNAME=${DB_USERNAME:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_DATABASE=${DB_DATABASE:-sportscoach}
+      # Mailjet
+      - Mailjet__ApiKey=${MAILJET_API_KEY}
+      - Mailjet__ApiSecret=${MAILJET_API_SECRET}
+      # Email Settings
+      - EmailSettings__FromEmail=${EMAIL_FROM}
+      - EmailSettings__FromName=${EMAIL_FROM_NAME:-Sports Coach}
+      - EmailSettings__LogoUrl=${EMAIL_LOGO_URL:-}
+      # Delivery Settings
+      - DeliverySettings__Email=${DELIVERY_EMAIL}
+      # Cloudinary
+      - Cloudinary__CloudName=${CLOUDINARY_CLOUD_NAME}
+      - Cloudinary__ApiKey=${CLOUDINARY_API_KEY}
+      - Cloudinary__ApiSecret=${CLOUDINARY_API_SECRET}
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - coaching-network
+
+volumes:
+  postgres_data:
+
+networks:
+  coaching-network:
+    driver: bridge
+

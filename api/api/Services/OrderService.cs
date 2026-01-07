@@ -5,7 +5,6 @@ using Microsoft.Extensions.Logging;
 
 namespace api.Services;
 
-// Services/OrderService.cs
 public class OrderService : IOrderService
 {
     private readonly IRepository<Order> _orderRepository;
@@ -25,8 +24,13 @@ public class OrderService : IOrderService
         _logger = logger;
     }
 
-    public async Task<Order> CreateOrderAsync(string email, string name, List<OrderItem> items, string shippingAddress,
-        string paymentIntentId)
+    public async Task<Order> CreateOrderAsync(
+        string email,
+        string firstName,
+        string lastName,
+        string phone,
+        List<OrderItem> items,
+        string shippingAddress)
     {
         try
         {
@@ -40,47 +44,53 @@ public class OrderService : IOrderService
                 }
 
                 item.Price = product.Price;
+                item.Product = product;
             }
 
             var order = new Order
             {
                 CustomerEmail = email,
-                CustomerName = name,
+                CustomerName = $"{firstName} {lastName}".Trim(),
+                CustomerPhone = phone,
                 OrderItems = items,
                 Total = items.Sum(i => i.Price * i.Quantity),
                 ShippingAddress = shippingAddress,
                 Status = OrderStatus.Pending,
-                OrderDate = DateTime.UtcNow, PaymentIntentId = paymentIntentId
+                OrderDate = DateTime.UtcNow
             };
 
             await _orderRepository.AddAsync(order);
-            await SendOrderConfirmationAsync(order.Id);
+            
+            _logger.LogInformation("Order #{OrderId} created successfully for {Email}", order.Id, email);
+
+            // Send notifications (don't fail the order if notifications fail)
+            try
+            {
+                // Send confirmation email to customer
+                await _emailService.SendOrderConfirmationAsync(order.CustomerEmail, order);
+                _logger.LogInformation("Confirmation email sent for Order #{OrderId}", order.Id);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to send confirmation email for Order #{OrderId}", order.Id);
+            }
+
+            try
+            {
+                // Send order notification to delivery person
+                await _emailService.SendOrderToDeliveryAsync(order);
+                _logger.LogInformation("Delivery notification sent for Order #{OrderId}", order.Id);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to send delivery notification for Order #{OrderId}", order.Id);
+            }
 
             return order;
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error creating order for {Email}", email);
-            throw;
-        }
-    }
-
-    public async Task SendOrderConfirmationAsync(int orderId)
-    {
-        var order = await GetOrderByIdAsync(orderId);
-        if (order == null)
-        {
-            throw new ArgumentException($"Order with ID {orderId} not found");
-        }
-
-        try
-        {
-            await _emailService.SendOrderConfirmationAsync(order.CustomerEmail, order);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to send confirmation email for order {OrderId}", orderId);
-            // Consider whether to throw or just log the error
             throw;
         }
     }
@@ -97,7 +107,7 @@ public class OrderService : IOrderService
                 return null;
             }
 
-            // Eager load order items and products if needed
+            // Load product information for each order item
             if (order.OrderItems != null)
             {
                 foreach (var item in order.OrderItems)
@@ -127,7 +137,6 @@ public class OrderService : IOrderService
                 throw new ArgumentException("Email cannot be empty");
             }
 
-            // Assuming your repository supports querying
             var orders = await _orderRepository.FindAllAsync(o =>
                 o.CustomerEmail.ToLower() == email.ToLower(), o => o.OrderItems);
 
@@ -154,7 +163,7 @@ public class OrderService : IOrderService
                 OrderItems = o.OrderItems.Select(oi => new OrderItemDto
                 {
                     ProductId = oi.ProductId,
-                    ProductName = oi.Product.Name, // Assuming Product has a Name
+                    ProductName = oi.Product?.Name ?? "Unknown Product",
                     Quantity = oi.Quantity,
                     Price = oi.Price
                 }).ToList(),
@@ -182,11 +191,17 @@ public class OrderService : IOrderService
             }
 
             order.Status = status;
-
-            // Add status change history if needed
-
             await _orderRepository.UpdateAsync(order);
-            await _emailService.SendOrderStatusUpdateAsync(order.CustomerEmail, order);
+            
+            // Send status update email
+            try
+            {
+                await _emailService.SendOrderStatusUpdateAsync(order.CustomerEmail, order);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to send status update email for Order #{OrderId}", orderId);
+            }
         }
         catch (Exception ex)
         {
@@ -195,14 +210,8 @@ public class OrderService : IOrderService
         }
     }
 
-    // Optional: Add additional methods as needed
     public async Task CancelOrderAsync(int orderId)
     {
         await UpdateOrderStatusAsync(orderId, OrderStatus.Cancelled);
-    }
-
-    public async Task CompleteOrderAsync(int orderId)
-    {
-        await UpdateOrderStatusAsync(orderId, OrderStatus.Completed);
     }
 }

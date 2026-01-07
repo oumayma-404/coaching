@@ -1,17 +1,24 @@
+using api.Models;
+
 namespace api.Contract;
 
-// Add this to your DTOs namespace
-public class OrderItemRequest
+public class OrderDto
 {
-    public int ProductId { get; set; }
-    public int Quantity { get; set; }
+    public int Id { get; set; }
+    public string CustomerEmail { get; set; } = string.Empty;
+    public string CustomerName { get; set; } = string.Empty;
+    public string CustomerPhone { get; set; } = string.Empty;
+    public List<OrderItemDto> OrderItems { get; set; } = new();
+    public decimal Total { get; set; }
+    public OrderStatus Status { get; set; }
+    public DateTime OrderDate { get; set; }
+    public string ShippingAddress { get; set; } = string.Empty;
 }
 
-// Update OrderRequest to use the DTO
-public class OrderRequest
+public class OrderItemDto
 {
-    public string Email { get; set; }
-    public string Name { get; set; }
-    public List<OrderItemRequest> Items { get; set; }
-    public string ShippingAddress { get; set; }
+    public int ProductId { get; set; }
+    public string ProductName { get; set; } = string.Empty;
+    public int Quantity { get; set; }
+    public decimal Price { get; set; }
 }

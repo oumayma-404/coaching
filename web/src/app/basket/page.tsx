@@ -18,8 +18,8 @@ export default function BasketPage() {
 
     // Calculate totals
     const subtotal = items.reduce((total, item) => total + item.price * item.quantity, 0)
-    const shipping = subtotal > 100 ? 0 : 9.99 // Free shipping over $100
-    const total = subtotal   + shipping
+    const shipping = subtotal > 100 ? 0 : 7 // Free shipping over 100 DT
+    const total = subtotal + shipping
 
     // Apply promo code
     const applyPromoCode = () => {
@@ -145,20 +145,29 @@ export default function BasketPage() {
                                     <div className="p-6 space-y-4">
                                         <div className="flex justify-between text-sm">
                                             <span className="text-[#003942]/70">Subtotal</span>
-                                            <span className="text-[#003942]">${subtotal.toFixed(2)}</span>
+                                            <span className="text-[#003942]">{subtotal.toFixed(2)} DT</span>
                                         </div>
-                                        
 
                                         <div className="flex justify-between text-sm">
-                                            <span className="text-[#003942]/70">Shipping</span>
-                                            <span
-                                                className="text-[#003942]">{shipping === 0 ? "Free" : `$${shipping.toFixed(2)}`}</span>
+                                            <span className="text-[#003942]/70">Delivery</span>
+                                            <span className="text-[#003942]">
+                                                {shipping === 0 ? (
+                                                    <span className="text-green-600">Free</span>
+                                                ) : (
+                                                    `${shipping.toFixed(2)} DT`
+                                                )}
+                                            </span>
                                         </div>
+                                        {shipping > 0 && (
+                                            <p className="text-xs text-[#003942]/50">
+                                                Free delivery on orders over 100 DT
+                                            </p>
+                                        )}
                                         
                                         <div className="pt-4 border-t border-[#003942]/10">
                                             <div className="flex justify-between font-bold text-[#003942]">
                                                 <span>Total</span>
-                                                <span>${total.toFixed(2)}</span>
+                                                <span>{total.toFixed(2)} DT</span>
                                             </div>
                                         </div>
 
@@ -220,7 +229,7 @@ export default function BasketPage() {
                                         <h3 className="font-medium text-[#003942]">Recommended Product {item}</h3>
                                         <p className="text-sm text-[#003942]/50">Category</p>
                                         <div className="mt-2 flex items-center justify-between">
-                                            <span className="font-bold text-[#003942]">$29.99</span>
+                                                <span className="font-bold text-[#003942]">29.99 DT</span>
                                             <Button
                                                 size="sm"
                                                 variant="outline"
